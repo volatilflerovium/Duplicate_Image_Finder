@@ -319,6 +319,9 @@ void FileManager::removeDuplicates(std::vector<std::string>& data){
 SUBDIR FileManager::reduce(const std::string& dirTest, std::vector<std::string>& directories){
 	bool a=false;
 	for(std::string& directory : directories){
+		if(directory==dirTest){
+			return SUBDIR::IS_SUB;
+		}
 		if(directory.find(dirTest)==0){
 			if(directory.find_last_of("/")==dirTest.length()){
 				directory=dirTest;

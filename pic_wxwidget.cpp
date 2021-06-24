@@ -3,7 +3,7 @@
 #include "pic_wxwidget.h"
 #include "data.h"
 #include "file_manager.h"
-
+#include "notification_module.h"
 //####################################################
 
 BEGIN_EVENT_TABLE(wxImageW, wxPanel)
@@ -174,6 +174,8 @@ void wxStackedImage::OnMouseLeftUp(wxMouseEvent& event){
 		
 		m_viewerImg->loadImage2(m_file, m_format);
 		m_viewerImg->paintNow();
+		
+		NotificationModule::displayData(m_file, 0.12345);
 	}
 }
 

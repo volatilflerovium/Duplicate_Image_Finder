@@ -74,6 +74,7 @@ set(SOURCES
 	picture_viewer.cpp
    wx_worker.cpp
    progress_bar.cpp
+   notification_module.cpp
 )
 
 add_executable(wxDuplicateImg ${SOURCES})

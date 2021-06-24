@@ -18,6 +18,8 @@
 #include "wx_worker.h"
 #include "progress_bar.h"
 
+#include "notification_module.h"
+
 //######################################################################
 
 class DuplicateImgGUI : public wxFrame
@@ -38,8 +40,7 @@ class DuplicateImgGUI : public wxFrame
 		wxPanel* m_bodyPanel;
 		WxWorker* m_worker;
 		wxStaticText* m_totalFilesText;
-		wxStaticText* m_filePathText;
-		wxStaticText* m_rankText;
+		NotificationModule* m_board;
 		ProgressBar* m_progressBar;
 		wxButton* m_browseBtn;
 		wxButton* m_startBtn;
