@@ -11,7 +11,7 @@
 #include <wx/wx.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
-
+#include <wx/event.h>
 //######################################################################
 
 class ProgressBar : public wxPanel
@@ -33,6 +33,13 @@ class ProgressBar : public wxPanel
 		float m_delta;
 		
 		void OnPaint(wxPaintEvent& event);
+		/*void hi(wxSizeEvent& event){
+			int currentWidth, h=20;
+			GetSize(&currentWidth, &h);
+			std::cout<<currentWidth<<" ++++++++++++++++\n";
+		};
+
+		DECLARE_EVENT_TABLE()//*/
 };
 
 //----------------------------------------------------------------------

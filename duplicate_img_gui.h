@@ -38,6 +38,8 @@ class DuplicateImgGUI : public wxFrame
 		wxPanel* m_bodyPanel;
 		WxWorker* m_worker;
 		wxStaticText* m_totalFilesText;
+		wxStaticText* m_filePathText;
+		wxStaticText* m_rankText;
 		ProgressBar* m_progressBar;
 		wxButton* m_browseBtn;
 		wxButton* m_startBtn;
@@ -57,7 +59,7 @@ class DuplicateImgGUI : public wxFrame
 		void OnUpdateStatus(wxCommandEvent& event);
 		void OnAddPic(wxCommandEvent& event);
 		void OnClear(wxCommandEvent& event);
-		void OnClose(wxCloseEvent &event);
+		void OnClose(wxCloseEvent& event);
 
 		struct
 		{

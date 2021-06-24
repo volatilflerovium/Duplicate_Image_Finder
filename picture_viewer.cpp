@@ -9,21 +9,26 @@ PictureViewer::PictureViewer(wxPanel* parent)
 :wxPanel(parent)
 {
 	wxBoxSizer* hBox = new wxBoxSizer(wxHORIZONTAL);
-	//vbox->Add(hbox4, 1, wxLEFT | wxRIGHT | wxEXPAND, 10);
-	SetSizer(hBox);//vbox);
+
+	SetSizer(hBox);
 	
 	wxColour colour(wxT("#ffffff"));
-	int minWidth=100;
+	int minWidth=120;
 	int minHeight=300;
 	m_scroller=new ScrolledWidgetsPane(this, -1, minWidth);
 	m_scroller->SetBackgroundColour(colour);
 	m_scroller->SetMinSize(wxSize(minWidth, minHeight));
-	hBox->Add(m_scroller, 0, wxEXPAND | wxTOP |  wxLEFT | wxRIGHT, 10);
 
-	m_rightPanel=new wxImageW(this, wxString(FileManager::c_IMG_BACKGROUND), wxBITMAP_TYPE_ANY, wxDefaultPosition);//, wxSize(WX::MIN_WIDTH-minWidth, minHeight));
+	wxBoxSizer* vBox2 = new wxBoxSizer(wxVERTICAL);
+
+	vBox2->Add(m_scroller, 1, wxEXPAND, 0);
+	hBox->Add(vBox2, 0, wxEXPAND | wxRIGHT, 10);
+
+	m_rightPanel=new wxImageW(this, wxString(FileManager::c_IMG_BACKGROUND), wxBITMAP_TYPE_ANY, wxDefaultPosition);//, 
+	m_rightPanel->SetMinSize(wxSize(WX::MIN_WIDTH-minWidth, minHeight));
 
 	m_rightPanel->SetBackgroundColour(colour);
-	hBox->Add(m_rightPanel, 1, wxEXPAND | wxALL, 10);
+	hBox->Add(m_rightPanel, 1, wxEXPAND, 0);
 	
 	wxStackedImage::setViewer(m_rightPanel);
 

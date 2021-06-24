@@ -19,8 +19,7 @@
 
 class wxImageW : public wxPanel
 {
-	public:	
-		wxImageW(wxPanel* parent, const wxPoint& pos);
+	public:
 		wxImageW(wxPanel* parent, wxString file, wxBitmapType format);
 		wxImageW(wxPanel* parent, wxString file, wxBitmapType format, const wxPoint& pos);
 		virtual ~wxImageW();

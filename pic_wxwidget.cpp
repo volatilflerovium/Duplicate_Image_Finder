@@ -10,14 +10,8 @@ BEGIN_EVENT_TABLE(wxImageW, wxPanel)
 	EVT_PAINT(wxImageW::paintEvent)
 END_EVENT_TABLE()
 
-wxImageW::wxImageW(wxPanel* parent, const wxPoint& pos)
-: wxPanel(parent, wxID_ANY, pos), 
-	m_file(wxT("")), m_format(wxBITMAP_TYPE_ANY)
-{
-	m_image=new wxBitmap();
-	//m_image->LoadFile(file, format);	
-}
 
+//----------------------------------------------------------------------
 
 wxImageW::wxImageW(wxPanel* parent, wxString file, wxBitmapType format, const wxPoint& pos)
 : wxPanel(parent, wxID_ANY, pos), 
@@ -27,14 +21,20 @@ wxImageW::wxImageW(wxPanel* parent, wxString file, wxBitmapType format, const wx
 	m_image->LoadFile(file, format);	
 }
 
+//----------------------------------------------------------------------
+
 wxImageW::~wxImageW(){
 	wxDELETE(m_image);
 }
+
+//----------------------------------------------------------------------
 
 wxImageW::wxImageW(wxPanel* parent, wxString file, wxBitmapType format)
 : wxImageW(parent, file, format, wxDefaultPosition)
 {
 }
+
+//----------------------------------------------------------------------
 
 void wxImageW::scaleToWidth(int newW){
 	int cW=(*m_image).GetWidth();
@@ -46,6 +46,8 @@ void wxImageW::scaleToWidth(int newW){
 	SetSize(newW, newH);
 }
 
+//----------------------------------------------------------------------
+
 void wxImageW::scaleToHeight(int newH){
 	int cW=(*m_image).GetWidth();
 	int cH=(*m_image).GetHeight();
@@ -56,7 +58,7 @@ void wxImageW::scaleToHeight(int newH){
 	SetSize(newW, newH);
 }
 
-
+//----------------------------------------------------------------------
 
 void wxImageW::loadImage2(wxString file, wxBitmapType format){
 	int newW, newH;
@@ -75,6 +77,8 @@ void wxImageW::loadImage2(wxString file, wxBitmapType format){
 
 	*m_image=wxBitmap(tmpImage.ConvertToImage().Scale(W, H /*, wxIMAGE_QUALITY_HIGH*/ ) );
 }
+
+//----------------------------------------------------------------------
 
 void wxImageW::loadImage3(wxString file, wxBitmapType format){
 	int newW, newH;

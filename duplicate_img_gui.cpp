@@ -56,20 +56,24 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	col0.SetWidth(WX::MIN_WIDTH-3*padding);
 	m_directories->InsertColumn(0, col0);
 
-	vBox->Add(m_directories, 1, wxEXPAND| wxLEFT | wxRIGHT, padding);
+	wxBoxSizer* hbox_1a = new wxBoxSizer(wxHORIZONTAL);
+	
+	hbox_1a->Add(m_directories, 1, wxEXPAND, 0);
+	vBox->Add(hbox_1a, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, padding);
 
 	//----------------------------------------------
-
+	// Static Text
+	//const int lineHeight=30;
+	
 	wxBoxSizer* hbox_2 = new wxBoxSizer(wxHORIZONTAL);
-	hbox_2->Add(10, -1, wxEXPAND);
 
 	wxStaticText* staticFiles = new wxStaticText(m_bodyPanel, wxID_ANY, wxT("Total files: "));
-	hbox_2->Add(staticFiles, 0, wxLEFT, 0);
-	
-	m_totalFilesText=new wxStaticText(m_bodyPanel, -1, wxT("0"), wxDefaultPosition, wxSize(120,60), wxALIGN_RIGHT | wxST_NO_AUTORESIZE);
-	hbox_2->Add(m_totalFilesText, 0, wxLEFT, 0);
+	hbox_2->Add(staticFiles);
 
-	vBox->Add(hbox_2, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, padding);
+	m_totalFilesText=new wxStaticText(m_bodyPanel, -1, wxT("0"));//, wxDefaultPosition, wxSize(60,lineHeight), wxALIGN_RIGHT | wxST_NO_AUTORESIZE);
+	hbox_2->Add(m_totalFilesText);
+
+	vBox->Add(hbox_2, 0, wxALIGN_RIGHT | wxTOP | wxRIGHT, padding);
 	
 	//-------------------------------------------------------
 	
@@ -94,23 +98,73 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	//-------------------------------------------------
 	//progress bar
 	
-	//wxBoxSizer* hbox42 = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* hbox_3a = new wxBoxSizer(wxHORIZONTAL);
 	
 	m_progressBar=new ProgressBar(m_bodyPanel, WX::MIN_WIDTH-3*padding, 30);
 	m_progressBar->setProgress(0);
-	vBox->Add(m_progressBar, 1, wxEXPAND | wxTOP |  wxLEFT | wxRIGHT, padding);
+	hbox_3a->Add(m_progressBar, 1, wxEXPAND, 0);// element will expand... as far as it is given room for than...
+	vBox->Add(hbox_3a, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, padding);// element will expand...and it will pass extra space to its childs
 
 	//-------------------------------------------------
 	//picture viewer
-	
-	//wxBoxSizer* hbox4 = new wxBoxSizer(wxHORIZONTAL);
-	
+
 	mkDummy(FileManager::c_IMG_BACKGROUND.c_str());
 	m_pictureViewer=new PictureViewer(m_bodyPanel);
 	
-	vBox->Add(m_pictureViewer, 1, wxEXPAND | wxTOP |  wxLEFT | wxRIGHT, padding);
+	vBox->Add(m_pictureViewer, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, padding);
+	
+	//-------------------------------------------------
+	
+	wxBoxSizer* hbox_2b = new wxBoxSizer(wxHORIZONTAL);
+
+	wxStaticText* staticFilePath = new wxStaticText(m_bodyPanel, wxID_ANY, wxT("File: "));
+	hbox_2b->Add(staticFilePath);
+
+	m_filePathText=new wxStaticText(m_bodyPanel, -1, wxT(""));
+	hbox_2b->Add(m_filePathText, 1, wxEXPAND, padding);
+	
+	wxBoxSizer* hbox_2c = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* staticRank = new wxStaticText(m_bodyPanel, wxID_ANY, wxT("rank: "));
+	hbox_2b->Add(staticRank, 0);
+
+	m_rankText=new wxStaticText(m_bodyPanel, -1, wxT("     "));//, wxDefaultPosition,  wxSize(70, lineHeight), wxALIGN_RIGHT);
+	hbox_2b->Add(m_rankText, 0, wxRIGHT, padding);
+
+	vBox->Add(hbox_2b, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, padding);
 
 	//-------------------------------------------------
+	
+	m_cancelBtn = new wxButton(m_bodyPanel, WX::CANCEL, wxT("Cancel"));
+	Connect(WX::CANCEL, wxEVT_COMMAND_BUTTON_CLICKED, 
+		wxCommandEventHandler(DuplicateImgGUI::OnCancel));
+
+	m_closeBtn = new wxButton(m_bodyPanel, wxID_EXIT, wxT("Close"));
+	Connect(wxID_EXIT, wxEVT_COMMAND_BUTTON_CLICKED, 
+		wxCommandEventHandler(DuplicateImgGUI::OnQuit));
+
+	wxBoxSizer* hbox_4 = new wxBoxSizer(wxHORIZONTAL);
+	hbox_4->Add(m_cancelBtn, 0);
+	hbox_4->Add(10, -1, wxEXPAND);
+	hbox_4->Add(m_closeBtn, 0);
+	
+	vBox->Add(hbox_4, 0, wxEXPAND | wxALL, padding);
+	
+
+	setEnable(INITIAL_STATE);
+
+	m_bodyPanel->SetSizerAndFit(vBox);
+
+	Centre();
+	
+	/*
+	TODO:
+		- display file name when left click it
+		- change colour of selected picture
+		- center picture
+		- fix duplicate directory
+	*/
+	
+		//-------------------------------------------------
 	/*
 	wxBoxSizer* hbox5 = new wxBoxSizer(wxHORIZONTAL);
 	wxCheckBox* cb1 = new wxCheckBox(m_bodyPanel, wxID_ANY, wxT("Case Sensitive"));	
@@ -134,31 +188,6 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	
 	vBox->Add(-1, 25);
 	//*/
-	//-------------------------------------------------
-	
-	m_cancelBtn = new wxButton(m_bodyPanel, WX::CANCEL, wxT("Cancel"));
-	Connect(WX::CANCEL, wxEVT_COMMAND_BUTTON_CLICKED, 
-		wxCommandEventHandler(DuplicateImgGUI::OnCancel));
-
-	m_closeBtn = new wxButton(m_bodyPanel, wxID_EXIT, wxT("Close"));
-	Connect(wxID_EXIT, wxEVT_COMMAND_BUTTON_CLICKED, 
-		wxCommandEventHandler(DuplicateImgGUI::OnQuit));
-
-	wxBoxSizer* hbox6 = new wxBoxSizer(wxHORIZONTAL);
-	hbox6->Add(m_cancelBtn, 0);
-	hbox6->Add(10, -1, wxEXPAND);
-	hbox6->Add(m_closeBtn, 0);
-	
-	vBox->Add(hbox6, 0, wxEXPAND | wxALL, padding);
-	
-
-
-
-	setEnable(INITIAL_STATE);
-
-	m_bodyPanel->SetSizerAndFit(vBox);
-
-	Centre();
 }
 
 //----------------------------------------------------------------------
@@ -188,7 +217,6 @@ BEGIN_EVENT_TABLE(DuplicateImgGUI, wxFrame )
 	EVT_COMMAND(EVNT_ADD_PICTURE_ID, wxEVT_COMMAND_TEXT_UPDATED, DuplicateImgGUI::OnAddPic)
 	EVT_COMMAND(EVNT_PROGRESS_BAR_ID, wxEVT_COMMAND_TEXT_UPDATED, DuplicateImgGUI::OnProgressBar)
 	EVT_COMMAND(EVNT_STATUS_ID, wxEVT_COMMAND_TEXT_UPDATED, DuplicateImgGUI::OnUpdateStatus)
-	//EVT_SIZE(DuplicateImgGUI::hi)
 END_EVENT_TABLE()
 
 //----------------------------------------------------------------------
