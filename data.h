@@ -82,8 +82,6 @@ namespace WX{
 		DELETE_IMG,
 		OPEN_IMG,
 	};
-	const int MIN_WIDTH=800;
-	const int MIN_HEIGHT=800;
 };
 
 //======================================================================

@@ -17,19 +17,6 @@
 //====================================================================
 
 class Worker {
-	private:
-		std::condition_variable m_cv;
-		static std::mutex m_bufferMtx;
-		std::mutex m_mtx;
-		std::unique_lock<std::mutex> m_ulock;
-		const Data* m_data;
-		const int m_wid;
-		const int m_step;
-		const int m_position;
-		bool m_running;
-		bool m_ready;
-		bool m_exitJob;
-		void findSimilarImages();
 
 	public:
 		Worker(int id, int position, int step)
@@ -58,6 +45,20 @@ class Worker {
 			//m_ready=false;
 			m_exitJob=false;	
 		}
+	
+	private:
+		std::condition_variable m_cv;
+		static std::mutex m_bufferMtx;
+		std::mutex m_mtx;
+		std::unique_lock<std::mutex> m_ulock;
+		const Data* m_data;
+		const int m_wid;
+		const int m_step;
+		const int m_position;
+		bool m_running;
+		bool m_ready;
+		bool m_exitJob;
+		void findSimilarImages();
 };
 
 

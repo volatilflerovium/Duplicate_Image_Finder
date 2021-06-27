@@ -22,23 +22,6 @@
 class FileManager
 {
 	public:
-		struct CnstChar
-		{
-			const char* m_cstr;
-			CnstChar(const char* data)
-			:m_cstr(std::move(data))
-			{}
-		};
-
-	private:	
-		static constexpr const char* c_separator=":"; 
-		static std::map<CnstChar, int> m_settings;
-		static std::string trim(const std::string& str);
-		static bool m_saveSession;
-		static std::string mkPath(const char* file);
-		static std::map<wxString, wxBitmapType> m_filter;
-		
-	public:
 		static const std::string c_APPLICATION_DIR;
 		static const std::string c_IMG_BACKGROUND;
 		static const std::string c_DIR_HIST;
@@ -55,6 +38,7 @@ class FileManager
 		static void removeDuplicates(std::vector<std::string>& directories);
 		static SUBDIR reduce(const std::string& dirTest, std::vector<std::string>& directories);
 		static bool isSuported(const wxString& wxStr);
+		static bool isWXsuported(const wxString& wxStr);
 		static wxBitmapType getBitmapType(const wxString& wxStr);
 		static void saveSession(bool save){
 			m_saveSession=save;
@@ -62,7 +46,25 @@ class FileManager
 
 		static bool isSessionSaved(){
 			return m_saveSession;
-		}		
+		}
+		
+		struct CnstChar
+		{
+			const char* m_cstr;
+			CnstChar(const char* data)
+			:m_cstr(std::move(data))
+			{}
+		};
+
+
+	private:	
+		static constexpr const char* c_separator=":"; 
+		static std::map<CnstChar, int> m_settings;
+		static std::string trim(const std::string& str);
+		static bool m_saveSession;
+		static std::string mkPath(const char* file);
+		static std::map<wxString, wxBitmapType> m_filter;
+		static std::map<wxString, bool> m_wxSupported;
 };
 
 //----------------------------------------------------------------------

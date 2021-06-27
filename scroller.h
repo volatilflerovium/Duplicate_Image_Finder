@@ -12,7 +12,6 @@
 #include <wx/sizer.h>
 #include <wx/panel.h>
 #include <list>
-#include "pic_wxwidget.h"
 
 
 //######################################################################
@@ -21,13 +20,12 @@ class ScrolledWidgetsPane : public wxScrolledWindow
 {
 	public:
 		ScrolledWidgetsPane(wxWindow* parent, wxWindowID id, int width);
-		void addImage(wxString file, wxBitmapType format, bool newBlock, float rank);
+		void addImage(wxString file, bool newBlock, float rank);
 		void clear();
 
 	private:
 		std::list<wxPanel*> m_pictureList;
 		wxPanel* m_panel;
-		
 		const int m_width;
 		int m_height;
 		bool m_newBlock;

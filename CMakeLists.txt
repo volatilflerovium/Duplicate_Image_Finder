@@ -62,9 +62,9 @@ endif()
 set(SOURCES
 	main.cpp
 	duplicate_img_gui.cpp
-	pic_wxwidget.cpp
+	wx_imagew.cpp
+	wx_stacked_image.cpp
 	scroller.cpp
-#
 	opencv_utilities.cpp
 	histogram_loader.cpp
 	worker.cpp

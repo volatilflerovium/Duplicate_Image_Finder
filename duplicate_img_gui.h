@@ -11,7 +11,7 @@
 #include <wx/wx.h>
 #include <wx/dirdlg.h>
 #include <wx/listctrl.h>
-//#include <wx/event.h>
+
 #include <map>
 
 #include "picture_viewer.h"

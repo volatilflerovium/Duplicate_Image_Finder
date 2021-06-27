@@ -246,8 +246,8 @@ int blockComp(int r){
 	return result;
 }
 
-void mkDummy(const char* imagePath){
-	cv::Mat img(cv::Size(30, 30), CV_8UC1, cv::Scalar(255));
+void mkDummy(const char* imagePath, unsigned char r, unsigned char g, unsigned char b){
+	cv::Mat img(cv::Size(30, 30), CV_8UC3, cv::Scalar(r, g, b));
 	cv::imwrite(imagePath, img);	
 }
 //######################################################################

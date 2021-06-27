@@ -60,7 +60,6 @@ void ProgressBar::OnPaint(wxPaintEvent& event)
 
 	int newPosition=newWidth*(m_position/(m_range*1.0));
 
-
 	wxPaintDC dc(this);
 
 	wxPen pen(wxColour("#80b3ff"));

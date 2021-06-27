@@ -1,6 +1,7 @@
 #include <iostream>
 #include "scroller.h"
-
+#include "wx_stacked_image.h"
+#include "wx_constants.h"
 
 //######################################################################
 
@@ -12,7 +13,7 @@ ScrolledWidgetsPane::ScrolledWidgetsPane(wxWindow* parent, wxWindowID id, int wi
 
 //----------------------------------------------------------------------
 
-void ScrolledWidgetsPane::addImage(wxString file, wxBitmapType format, bool newBlock, float rank){
+void ScrolledWidgetsPane::addImage(wxString file, bool newBlock, float rank){
 	int x, y;
 	GetViewStart(&x, &y);
 	
@@ -21,7 +22,7 @@ void ScrolledWidgetsPane::addImage(wxString file, wxBitmapType format, bool newB
 			int sHeight=10;
 			wxPanel* separator=new wxPanel(m_panel, wxID_ANY, wxPoint(0, m_height), wxSize(m_width, sHeight));
 			separator->SetPosition(wxPoint(0, m_height));
-			separator->SetBackgroundColour(wxColour(wxT("#3366ff")));
+			separator->SetBackgroundColour(wxColour(c_separatorColour));
 			m_height+=sHeight;
 			m_panel->SetSize(m_width, m_height);
 			m_pictureList.push_back(separator);
@@ -29,7 +30,8 @@ void ScrolledWidgetsPane::addImage(wxString file, wxBitmapType format, bool newB
 		m_newBlock=true;
 	}
 		
-	PicWrapper* newPic=new PicWrapper(m_panel, file, format, wxPoint(0, m_height), m_width);
+	PicWrapper* newPic=new PicWrapper(m_panel, file, wxPoint(0, m_height), m_width);
+	
 	m_height+=newPic->getHeight();
 
 	m_panel->SetSize(m_width, m_height);

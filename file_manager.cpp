@@ -16,6 +16,7 @@ const std::string FileManager::c_SAVE_SETTING(FileManager::mkPath("settings"));
 const std::string FileManager::c_FILE_LIST(FileManager::mkPath("list"));
 bool FileManager::m_saveSession(false);
 std::map<wxString, wxBitmapType> FileManager::m_filter;
+std::map<wxString, bool> FileManager::m_wxSupported;
 std::map<FileManager::CnstChar, int> FileManager::m_settings;
 //----------------------------------------------------------------------
 
@@ -99,7 +100,6 @@ bool FileManager::fileExists(const std::string& filePath){
 //----------------------------------------------------------------------
 	
 void FileManager::init(){
-	
 	m_filter.emplace("jpeg", wxBITMAP_TYPE_JPEG);
 	m_filter.emplace("JPEG", wxBITMAP_TYPE_JPEG);
 	m_filter.emplace("jpg", wxBITMAP_TYPE_JPEG);
@@ -143,6 +143,50 @@ void FileManager::init(){
 	m_filter.emplace("dib", wxBITMAP_TYPE_ANY);
 	m_filter.emplace("DIP", wxBITMAP_TYPE_ANY);
 
+	//initilise m_wxSupported
+	m_wxSupported.emplace("jpeg", true);
+	m_wxSupported.emplace("JPEG", true);
+	m_wxSupported.emplace("jpg", true);
+	m_wxSupported.emplace("JPG", true);
+	m_wxSupported.emplace("jpe", true);
+	m_wxSupported.emplace("JPE", true);
+	m_wxSupported.emplace("png", true);
+	m_wxSupported.emplace("PNG", true);
+	m_wxSupported.emplace("webp", false);
+	m_wxSupported.emplace("WEBP", false);
+	m_wxSupported.emplace("bmp", true);
+	m_wxSupported.emplace("BMP", true);
+	m_wxSupported.emplace("tiff", true);
+	m_wxSupported.emplace("TIFF", true);
+	m_wxSupported.emplace("tif", false);
+	m_wxSupported.emplace("TIF", false);
+	m_wxSupported.emplace("jp2", false);
+	m_wxSupported.emplace("JP2", false);
+	m_wxSupported.emplace("pic", false);
+	m_wxSupported.emplace("PIC", false);
+	m_wxSupported.emplace("ppm", false);
+	m_wxSupported.emplace("PPM", false);
+	m_wxSupported.emplace("pxm", false);
+	m_wxSupported.emplace("PXM", false);
+	m_wxSupported.emplace("pnm", true);
+	m_wxSupported.emplace("PNM", true);
+	m_wxSupported.emplace("pfm", false);
+	m_wxSupported.emplace("PFM", false);
+	m_wxSupported.emplace("sr", false);
+	m_wxSupported.emplace("SR", false);
+	m_wxSupported.emplace("ras", false);
+	m_wxSupported.emplace("RAS", false);
+	m_wxSupported.emplace("exr", false);
+	m_wxSupported.emplace("EXR", false);
+	m_wxSupported.emplace("hdr", false);
+	m_wxSupported.emplace("HDR", false);
+	m_wxSupported.emplace("pbm", false);
+	m_wxSupported.emplace("PBM", false);
+	m_wxSupported.emplace("pgm", false);
+	m_wxSupported.emplace("PGM", false);
+	m_wxSupported.emplace("dib", false);
+	m_wxSupported.emplace("DIP", false);
+
 	//In Linux everything is a file :-)
 
 	if(!fileExists(c_APPLICATION_DIR)){
@@ -177,6 +221,17 @@ bool FileManager::isSuported(const wxString& wxStr){
 	}
 	return false;
 }
+
+//----------------------------------------------------------------------
+
+bool FileManager::isWXsuported(const wxString& wxStr){
+	std::size_t n=wxStr.find_last_of('.');
+	if(n!= std::string::npos){
+		return m_wxSupported.find(wxStr.substr(n+1))!=m_wxSupported.end();
+	}
+	return false;
+}
+
 //----------------------------------------------------------------------
 
 bool FileManager::loadSettings(){
@@ -344,6 +399,13 @@ SUBDIR FileManager::reduce(const std::string& dirTest, std::vector<std::string>&
 }
 
 
+//----------------------------------------------------------------------
+
+
+
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
 

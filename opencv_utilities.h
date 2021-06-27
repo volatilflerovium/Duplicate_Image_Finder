@@ -56,7 +56,7 @@ void mkHistograms(const std::string& picsPath, const std::string& video_list);
 
 int blockComp(int x);
 
-void mkDummy(const char* path);
+void mkDummy(const char* path, unsigned char r, unsigned char g, unsigned char b);
 //######################################################################
 
 

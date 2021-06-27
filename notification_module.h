@@ -13,17 +13,18 @@
 
 class NotificationModule : public wxPanel
 {
+	public:
+		static NotificationModule* init(wxPanel* parent);
+		static void displayData(const wxString& m_file, float rank);
+		void setLabels(const wxString& m_file, float rank);
+
 	private:
 		static NotificationModule* instance;
 		wxBoxSizer* m_hbox;
 		wxStaticText* m_filePathText;
 		wxStaticText* m_rankText;
 		NotificationModule(wxPanel* parent);
-
-	public:
-		static NotificationModule* init(wxPanel* parent);
-		static void displayData(const wxString& m_file, float rank);
-		void setLabels(const wxString& m_file, float rank);
+		void onResize(wxSizeEvent& evt);
 
 };
 

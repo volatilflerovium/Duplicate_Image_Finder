@@ -13,6 +13,8 @@
 #include <wx/sizer.h>
 
 #include "scroller.h"
+#include "wx_imagew.h"
+#include "wx_stacked_image.h"
 
 //######################################################################
 
@@ -25,7 +27,7 @@ class PictureViewer : public wxPanel
 
 	private:
 		ScrolledWidgetsPane* m_scroller;
-		wxImageW* m_rightPanel;
+		PicWrapper2* m_rightPanel;
 };
 
 #endif
