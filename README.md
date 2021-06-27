@@ -9,7 +9,7 @@ An AppImage is a downloadable file for Linux that contains an application and ev
 
 ## How to run and install Duplicate Image Finder?
 
-Download Duplicate Image Finder and make it executable. 
+Download [Duplicate Image Finder](https://github.com/volatilflerovium/Duplicate_Image_Finder/raw/main/DuplicateImageFinder-x86_64.AppImage) and make it executable. 
 You can do this using the graphical user interface, or the terminal emulator. 
 Via a terminal run:
 ```
