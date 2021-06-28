@@ -20,6 +20,7 @@ class ScrolledWidgetsPane : public wxScrolledWindow
 {
 	public:
 		ScrolledWidgetsPane(wxWindow* parent, wxWindowID id, int width);
+		~ScrolledWidgetsPane();
 		void addImage(wxString file, bool newBlock, float rank);
 		void clear();
 

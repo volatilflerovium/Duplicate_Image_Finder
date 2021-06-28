@@ -31,9 +31,18 @@ PictureViewer::PictureViewer(wxPanel* parent)
 
 //----------------------------------------------------------------------
 
+PictureViewer::~PictureViewer(){
+	//std::cout<<"PictureViewer destroy\n";
+	delete m_scroller;
+	delete m_rightPanel;
+}
+//----------------------------------------------------------------------
+
 void PictureViewer::loadPicture(std::string filePath, bool newBlock, float rank){
 	m_scroller->addImage(wxString(filePath), newBlock, rank);
 }
+
+
 
 //----------------------------------------------------------------------
 

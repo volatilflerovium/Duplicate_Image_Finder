@@ -1,9 +1,9 @@
 install(
-    FILES quickapp.desktop
+    FILES wxduplicateimgapp.desktop
     DESTINATION share/applications/
 )
 
 install(
-    FILES quickapp.png
-    DESTINATION share/icons/hicolor/128x128/apps
+    FILES wxduplicateimgapp.png
+    DESTINATION share/icons/hicolor/228x228/apps
 )

@@ -139,7 +139,6 @@ class Printer
 
 				~SingletonManager(){
 					if(m_sgtn!=nullptr){
-						//std::cout<<"Deleting singleton ++++++++++++++++++++++++++"<<std::endl;
 						delete m_sgtn;
 					}
 				};

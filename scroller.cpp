@@ -13,6 +13,14 @@ ScrolledWidgetsPane::ScrolledWidgetsPane(wxWindow* parent, wxWindowID id, int wi
 
 //----------------------------------------------------------------------
 
+ScrolledWidgetsPane::~ScrolledWidgetsPane(){
+	//std::cout<<"ScrolledWidgetsPane destroy\n";
+	clear();
+	delete m_panel;
+}
+
+//----------------------------------------------------------------------
+
 void ScrolledWidgetsPane::addImage(wxString file, bool newBlock, float rank){
 	int x, y;
 	GetViewStart(&x, &y);

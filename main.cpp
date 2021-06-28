@@ -28,3 +28,8 @@ bool MyApp::OnInit()
 
 	return true;
 }
+
+void MyApp::OnClose(wxCloseEvent &event){
+	std::cout<<"closing app!\n";
+}
+

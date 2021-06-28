@@ -36,6 +36,14 @@ NotificationModule::NotificationModule(wxPanel* parent)
 }
 
 //----------------------------------------------------------------------
+NotificationModule::~NotificationModule(){
+	//std::cout<<"NotificationModule\n";
+	delete m_hbox;
+	delete m_filePathText;
+	delete m_rankText;
+}
+
+//----------------------------------------------------------------------
 
 NotificationModule* NotificationModule::init(wxPanel* parent){
 	if(!instance){

@@ -10,4 +10,6 @@ class MyApp : public wxApp
 		~MyApp(){
 			//wxDELETE(m_simple);
 		}
+		
+		void OnClose(wxCloseEvent &event);
 };

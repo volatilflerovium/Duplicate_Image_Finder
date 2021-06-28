@@ -39,6 +39,7 @@ class DuplicateImgGUI : public wxFrame
 		PictureViewer* m_pictureViewer;
 		wxPanel* m_bodyPanel;
 		WxWorker* m_worker;
+		wxStaticText* m_staticFiles;
 		wxStaticText* m_totalFilesText;
 		NotificationModule* m_board;
 		ProgressBar* m_progressBar;

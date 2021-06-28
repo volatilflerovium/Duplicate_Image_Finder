@@ -22,6 +22,7 @@ class PictureViewer : public wxPanel
 {
 	public:
 		PictureViewer(wxPanel* parent);
+		~PictureViewer();
 		void loadPicture(std::string filePath, bool newBlock, float rank);
 		void clear();
 

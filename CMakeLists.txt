@@ -77,15 +77,14 @@ set(SOURCES
    notification_module.cpp
 )
 
-add_executable(wxDuplicateImg ${SOURCES})
-
+add_executable(wxDuplicateImgFinder ${SOURCES})
 
 # link required libs
-target_link_libraries(wxDuplicateImg ${wxWidgets_LIBRARIES})
+target_link_libraries(wxDuplicateImgFinder ${wxWidgets_LIBRARIES})
 
-target_link_libraries(wxDuplicateImg ${OpenCV_LIBS})
-target_link_libraries(wxDuplicateImg ${CMAKE_THREAD_LIBS_INIT} )
-target_link_libraries(wxDuplicateImg stdc++fs )
+target_link_libraries(wxDuplicateImgFinder ${OpenCV_LIBS})
+target_link_libraries(wxDuplicateImgFinder ${CMAKE_THREAD_LIBS_INIT} )
+target_link_libraries(wxDuplicateImgFinder stdc++fs )
 
 # install resources
 add_subdirectory(resources)

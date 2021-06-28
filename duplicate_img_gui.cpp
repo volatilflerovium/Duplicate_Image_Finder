@@ -66,8 +66,8 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	wxBoxSizer* hbox_2 = new wxBoxSizer(wxHORIZONTAL);
 	hbox_2->Add(10, 10, wxEXPAND);
 
-	wxStaticText* staticFiles = new wxStaticText(m_bodyPanel, wxID_ANY, wxT("Total files: "));
-	hbox_2->Add(staticFiles);
+	m_staticFiles = new wxStaticText(m_bodyPanel, wxID_ANY, wxT("Total files: "));
+	hbox_2->Add(m_staticFiles);
 
 	m_totalFilesText=new wxStaticText(m_bodyPanel, -1, wxT("0"), wxDefaultPosition, wxSize(60,lineHeight), wxALIGN_RIGHT | wxST_NO_AUTORESIZE);
 	hbox_2->Add(m_totalFilesText);
@@ -178,6 +178,12 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 //----------------------------------------------------------------------
 
 DuplicateImgGUI::~DuplicateImgGUI(){
+	//std::cout<<"destructor: DuplicateImgGUI\n";
+	
+	wxDELETE(m_staticFiles);
+	wxDELETE(m_totalFilesText);
+	wxDELETE(m_progressBar);
+	wxDELETE(m_board);
 	wxDELETE(m_bodyPanel);
 	
 	/*wxDELETE(m_dirDialog);
@@ -191,7 +197,10 @@ DuplicateImgGUI::~DuplicateImgGUI(){
 	//wxDELETE(m_closeBtn);
 	//wxDELETE(m_cancelBtn);
 	//wxDELETE(m_clearBtn);//*/
-	//std::cout<<"destroying simple!\n";
+	
+
+	
+	
 };
 
 //----------------------------------------------------------------------
