@@ -20,8 +20,7 @@ class NotificationModule : public wxPanel
 		~NotificationModule();
 		
 	private:
-		static NotificationModule* instance;
-		wxBoxSizer* m_hbox;
+		static NotificationModule* m_instance;
 		wxStaticText* m_filePathText;
 		wxStaticText* m_rankText;
 		NotificationModule(wxPanel* parent);

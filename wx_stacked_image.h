@@ -14,14 +14,42 @@
 //######################################################################
 //######################################################################
 
-class PicWrapper2;
+
+class PicWrapper2 : public wxPanel2
+{
+	public:
+		static PicWrapper2* m_instance;
+		static PicWrapper2* getInstance(wxPanel* parent, const wxSize& size, int padding);
+		
+		virtual ~PicWrapper2();
+
+		static void WallPaper();
+		static void LoadImage(const wxString& file);
+		
+		void SetSize(int width, int height);
+
+	private:
+		wxImageW* m_pic;
+		int m_padding;
+		
+		void loadImage(const wxString& file);
+
+		PicWrapper2(wxPanel* parent, const wxSize& size, int padding);
+		
+		PicWrapper2(const PicWrapper2&) = delete;
+		PicWrapper2() = delete;
+		PicWrapper2& operator=(const PicWrapper2&) = delete;
+
+		void resize(wxSizeEvent& event);
+		DECLARE_EVENT_TABLE()	
+};
+
+
+//######################################################################
+//######################################################################
 
 class wxStackedImage : public wxImageW
 {
-	private:
-		static PicWrapper2* m_viewerImg;
-		static wxStackedImage* m_last;
-
 	public:
 		wxStackedImage(wxPanel* parent, wxString file);
 		wxStackedImage(wxPanel* parent, const wxString& file, const wxPoint& pos);
@@ -31,21 +59,24 @@ class wxStackedImage : public wxImageW
 
 		virtual ~wxStackedImage(){};
 
-		static void setViewer(PicWrapper2* viewerImg);
 		static void clearBackground();
+
+	private:
+		static wxStackedImage* m_last;
 
 		void OnOpenImg(wxCommandEvent& event);
 		void OnDeleteImg(wxCommandEvent& event);
 		void OnMouseLeftUp(wxMouseEvent& event);
 		void OnMouseRightUp(wxMouseEvent& event);
-		DECLARE_EVENT_TABLE()
+		DECLARE_EVENT_TABLE()	
+
 };
 
 //######################################################################
 //######################################################################
 //######################################################################
 
-class PicWrapper : public wxPanel
+class PicWrapper : public wxPanel2
 {
 	public:
 		PicWrapper(wxPanel* parent, const wxString& file, const wxPoint& pos, int width);
@@ -54,52 +85,20 @@ class PicWrapper : public wxPanel
 			wxDELETE(m_pic);
 		}
 
-		int getHeight() const;
-
 	protected:
 		wxStackedImage* m_pic;
 		int m_padding;
 };
 
+/*
 inline int PicWrapper::getHeight() const{
 	int x, y;
 	GetSize(&x, &y);
 	return y;
-}
+}//*/
 
 //######################################################################
-
-
-class PicWrapper2 : public wxPanel
-{
-	public:
-		PicWrapper2(wxPanel* parent, const wxSize& size, int padding);
-		virtual ~PicWrapper2(){
-			wxDELETE(m_pic);
-		}
-
-		void wallPaper();
-		void loadImage(const wxString& file);
-		void SetSize(int width, int height);
-		int getHeight() const;
-	
-	protected:
-		wxImageW* m_pic;
-		int m_padding;
-		
-		void resize(wxSizeEvent& event);
-		DECLARE_EVENT_TABLE()	
-};
-
-//----------------------------------------------------------------------
-
-inline int PicWrapper2::getHeight() const{
-	int x, y;
-	GetSize(&x, &y);
-	return y;
-}
-
-
+//######################################################################
 //######################################################################
 
 #endif

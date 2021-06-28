@@ -22,19 +22,15 @@ PictureViewer::PictureViewer(wxPanel* parent)
 	vBox2->Add(m_scroller, 1, wxEXPAND, 0);
 	hBox->Add(vBox2, 0, wxEXPAND | wxRIGHT, 10);
 
-	m_rightPanel=new PicWrapper2(this, wxSize(MIN_WIDTH-c_scrollerWidth, c_scrollerMinHeight), 0);
-	hBox->Add(m_rightPanel, 1, wxEXPAND, 0);
+	PicWrapper2* rightPanel=PicWrapper2::getInstance(this, wxSize(MIN_WIDTH-c_scrollerWidth, c_scrollerMinHeight), 0);
+	hBox->Add(rightPanel, 1, wxEXPAND, 0);
 	hBox->Layout();
-	
-	wxStackedImage::setViewer(m_rightPanel);
 }
 
 //----------------------------------------------------------------------
 
 PictureViewer::~PictureViewer(){
-	//std::cout<<"PictureViewer destroy\n";
-	delete m_scroller;
-	delete m_rightPanel;
+	wxDELETE(m_scroller);
 }
 //----------------------------------------------------------------------
 
@@ -42,14 +38,12 @@ void PictureViewer::loadPicture(std::string filePath, bool newBlock, float rank)
 	m_scroller->addImage(wxString(filePath), newBlock, rank);
 }
 
-
-
 //----------------------------------------------------------------------
 
 void PictureViewer::clear(){
 	m_scroller->clear();
+	PicWrapper2::WallPaper();
 	wxStackedImage::clearBackground();	
-	m_rightPanel->wallPaper();	
 }
 
 //----------------------------------------------------------------------

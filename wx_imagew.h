@@ -19,17 +19,41 @@
 
 //######################################################################
 
+class wxPanel2 : public wxPanel
+{
+	public:
+		wxPanel2(wxPanel* parent, const wxPoint& pos)
+		: wxPanel(parent, wxID_ANY, pos)
+		{}
+		
+		
+		int getHeight() const{
+			int x, y;
+			GetSize(&x, &y);
+			return y;
+		}
+		
+		int getWidth() const{
+			int x, y;
+			GetSize(&x, &y);
+			return x;
+		}
 
-class wxImageW : public wxPanel
+	private:
+		DECLARE_EVENT_TABLE()	
+};
+
+//######################################################################
+
+
+class wxImageW : public wxPanel2
 {
 	public:
 		wxImageW(wxPanel* parent, const wxString& file, const wxPoint& pos);
 		wxImageW(wxPanel* parent, const wxString& file, const wxPoint& pos, int width);
 		wxImageW(wxPanel* parent, const wxString& file);
 		virtual ~wxImageW();
-
-		int getHeight() const;		
-		int getWidth() const;		
+	
 		void loadImage(const wxString& file);
 		void loadImage(const wxString& file, int width, int height);
 		void wallPaper(const wxString& file);
@@ -57,20 +81,6 @@ class wxImageW : public wxPanel
 };
 
 //----------------------------------------------------------------------
-
-inline int wxImageW::getHeight() const{
-	int x, y;
-	GetSize(&x, &y);
-	return y;
-}
-
-//----------------------------------------------------------------------
-
-inline int wxImageW::getWidth() const{
-	int x, y;
-	GetSize(&x, &y);
-	return x;
-}
 
 //----------------------------------------------------------------------
 

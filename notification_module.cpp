@@ -1,7 +1,7 @@
 #include "notification_module.h"
 #include "wx_constants.h"
 
-NotificationModule* NotificationModule::instance(nullptr);
+NotificationModule* NotificationModule::m_instance(nullptr);
 
 //----------------------------------------------------------------------
 
@@ -37,20 +37,20 @@ NotificationModule::NotificationModule(wxPanel* parent)
 
 //----------------------------------------------------------------------
 NotificationModule::~NotificationModule(){
-	//std::cout<<"NotificationModule\n";
-	delete m_hbox;
-	delete m_filePathText;
-	delete m_rankText;
+	//std::cout<<"NotificationModule destructor\n";
+	//wxDELETE(m_hbox);
+	wxDELETE(m_filePathText);
+	wxDELETE(m_rankText);
 }
 
 //----------------------------------------------------------------------
 
 NotificationModule* NotificationModule::init(wxPanel* parent){
-	if(!instance){
-		instance=new NotificationModule(parent);
+	if(!m_instance){
+		m_instance=new NotificationModule(parent);
 	}
 
-	return instance;
+	return m_instance;
 }
 
 //----------------------------------------------------------------------
@@ -64,7 +64,7 @@ void NotificationModule::setLabels(const wxString& filePath, float rank){
 //----------------------------------------------------------------------
 
 void NotificationModule::displayData(const wxString& filePath, float rank){
-	instance->setLabels(filePath, rank);
+	m_instance->setLabels(filePath, rank);
 }
 
 //----------------------------------------------------------------------

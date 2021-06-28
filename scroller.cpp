@@ -14,9 +14,8 @@ ScrolledWidgetsPane::ScrolledWidgetsPane(wxWindow* parent, wxWindowID id, int wi
 //----------------------------------------------------------------------
 
 ScrolledWidgetsPane::~ScrolledWidgetsPane(){
-	//std::cout<<"ScrolledWidgetsPane destroy\n";
 	clear();
-	delete m_panel;
+	wxDELETE(m_panel);
 }
 
 //----------------------------------------------------------------------

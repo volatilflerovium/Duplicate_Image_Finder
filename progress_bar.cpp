@@ -3,8 +3,9 @@
 //----------------------------------------------------------------------
 
 ProgressBar::ProgressBar(wxPanel* parent, int width, int height)
-:wxPanel(parent, -1, wxDefaultPosition),//, wxSize(width, height)), 
-m_range(width), m_height(height), m_position(0)
+:wxPanel(parent, -1, wxDefaultPosition),
+m_range(width), m_height(height), m_position(0),
+m_step(0), m_delta(0.0)
 {
 	SetMinSize(wxSize(width, height));
 

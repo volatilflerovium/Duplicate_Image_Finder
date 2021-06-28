@@ -30,6 +30,6 @@ bool MyApp::OnInit()
 }
 
 void MyApp::OnClose(wxCloseEvent &event){
-	std::cout<<"closing app!\n";
+	//std::cout<<"closing app!\n";
 }
 

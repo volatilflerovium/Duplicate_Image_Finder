@@ -16,7 +16,6 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	m_bodyPanel = new wxPanel(this, -1, wxDefaultPosition);
 
 	wxBoxSizer* vBox = new wxBoxSizer(wxVERTICAL);
-	//m_bodyPanel->SetSizer(vBox);
 
 	wxBoxSizer* hbox_1 = new wxBoxSizer(wxHORIZONTAL);
 
@@ -178,12 +177,12 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 //----------------------------------------------------------------------
 
 DuplicateImgGUI::~DuplicateImgGUI(){
-	//std::cout<<"destructor: DuplicateImgGUI\n";
+//	std::cout<<"destructor: DuplicateImgGUI\n";
 	
 	wxDELETE(m_staticFiles);
 	wxDELETE(m_totalFilesText);
 	wxDELETE(m_progressBar);
-	wxDELETE(m_board);
+	//wxDELETE(m_board);
 	wxDELETE(m_bodyPanel);
 	
 	/*wxDELETE(m_dirDialog);
@@ -197,10 +196,7 @@ DuplicateImgGUI::~DuplicateImgGUI(){
 	//wxDELETE(m_closeBtn);
 	//wxDELETE(m_cancelBtn);
 	//wxDELETE(m_clearBtn);//*/
-	
 
-	
-	
 };
 
 //----------------------------------------------------------------------

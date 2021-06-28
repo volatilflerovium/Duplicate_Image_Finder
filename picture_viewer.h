@@ -28,7 +28,6 @@ class PictureViewer : public wxPanel
 
 	private:
 		ScrolledWidgetsPane* m_scroller;
-		PicWrapper2* m_rightPanel;
 };
 
 #endif

@@ -1,12 +1,15 @@
 #include <wx/image.h>
 #include <iostream>
 
-#include "data.h"
-
 #include "wx_imagew.h"
 #include "file_manager.h"
+#include "data.h"
 
 //####################################################
+
+BEGIN_EVENT_TABLE(wxPanel2, wxPanel)
+END_EVENT_TABLE()
+
 
 BEGIN_EVENT_TABLE(wxImageW, wxPanel)
 	EVT_PAINT(wxImageW::paintEvent)
@@ -15,7 +18,7 @@ END_EVENT_TABLE()
 //----------------------------------------------------------------------
 
 wxImageW::wxImageW(wxPanel* parent, const wxString& file, const wxPoint& pos)
-: wxPanel(parent, wxID_ANY, pos), 
+: wxPanel2(parent, pos), 
 	m_file(file), m_isSupported(FileManager::isWXsuported(file))
 {
 	m_image=new wxBitmap();
@@ -25,7 +28,7 @@ wxImageW::wxImageW(wxPanel* parent, const wxString& file, const wxPoint& pos)
 //----------------------------------------------------------------------
 
 wxImageW::wxImageW(wxPanel* parent, const wxString& file, const wxPoint& pos, int width)
-: wxPanel(parent, wxID_ANY, pos), 
+: wxPanel2(parent, pos), 
 	m_file(file), m_isSupported(FileManager::isWXsuported(file))
 {
 	m_image=new wxBitmap();
@@ -96,7 +99,6 @@ void wxImageW::wallPaper(const wxString& file){
 void wxImageW::resizeImage(){
 	int width, height;
 	GetSize(&width, &height);
-	//std::cout<<width<<" "<<height<<"???\n";
 	SetSize(width, height);
 }
 
