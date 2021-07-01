@@ -67,6 +67,7 @@ void wxImageW::loadImage(const wxString& file){
 	m_isSupported=true;
 	reLoadImage();
 	resizeImage();
+	paintNow();
 }
 
 //----------------------------------------------------------------------
@@ -78,6 +79,7 @@ void wxImageW::loadImage(const wxString& file, int width, int height){
 	reLoadImage();
 	
 	SetSize(width, height);
+	paintNow();
 }
 
 //----------------------------------------------------------------------

@@ -13,7 +13,7 @@ Download [Duplicate Image Finder](https://github.com/volatilflerovium/Duplicate_
 You can do this using the graphical user interface, or the terminal emulator. 
 Via a terminal run:
 ```
-chmod ugo x ~/path/to/DuplicateImageFinder-x86_64.AppImage
+chmod ugo x ~/path/to/wxDuplicate_Image_Finder-x86_64.AppImage
 ```
 
 Using the graphical interface: right-clicking on it, select Properties , 
