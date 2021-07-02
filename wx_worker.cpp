@@ -73,7 +73,6 @@ wxThread::ExitCode WxWorker::Entry(){
 
 bool WxWorker::mkHist(){
 	std::ofstream fileList(FileManager::c_FILE_LIST, std::ios::app);
-	Logger::log("set histogram bands proportional to the actual picture size");
 	int lineNumb=1;
 	for(const std::string& imageName : (*m_fileList)) {
 		if(m_stopJob){
@@ -82,7 +81,7 @@ bool WxWorker::mkHist(){
 
 		try
 		{
-			std::vector<cv::Mat> hist_base1=getNormalizeHistogram8(imageName.c_str());
+			std::vector<cv::Mat> hist_base1=getNormalizeHistogram82(imageName.c_str());
 
 			for(int k=0; k<DIMGS::DATA_SIZE; k++){
 				if(m_stopJob){
@@ -116,7 +115,7 @@ bool WxWorker::mkHist(){
 void WxWorker::doWork(){
 	bool newBlock=false;
 	std::string* pic=nullptr;
-	float rank=0.0;
+	int rank=0;
 	Data* data=nullptr;
 
 	while(1){ 
@@ -170,14 +169,13 @@ void WxWorker::sendEventStatus(int status){
 
 //----------------------------------------------------------------------
 
-void WxWorker::sendEventPicture(std::string* pic, bool newBlock, float rank){
+void WxWorker::sendEventPicture(std::string* pic, bool newBlock, int rank){
 	wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, EVNT_ADD_PICTURE_ID);
 	if(newBlock){
-		rank*=-1.0;
+		rank*=-1;
 	}
-	int rk=rank*10000.0;
-	
-	event.SetInt(rk);
+
+	event.SetInt(rank);
 	event.SetString(wxString(*pic));
 	m_parent->GetEventHandler()->AddPendingEvent(event);
 }

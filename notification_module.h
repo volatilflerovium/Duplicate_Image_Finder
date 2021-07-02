@@ -16,6 +16,8 @@ class NotificationModule : public wxPanel
 	public:
 		static NotificationModule* init(wxPanel* parent);
 		static void displayData(const wxString& m_file, float rank);
+		static void Clear();
+		void clear();
 		void setLabels(const wxString& m_file, float rank);
 		~NotificationModule();
 		

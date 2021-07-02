@@ -156,6 +156,72 @@ cv::Mat getNormalizeHistogram(const cv::Mat& img, const cv::Mat& mask) {
 
 //--------------------------------------------------------------------
 
+cv::Mat mkMask2(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wideY){
+	int w=img.size().width-2*offsetX;
+	int h=img.size().height-2*offsetY;	
+	int pw=w+2*wideX;
+	int ph=h+2*wideY;
+	cv::Mat outter(img.size(), CV_8UC1, cv::Scalar(0));
+	cv::Mat inner(cv::Size(pw, ph), CV_8UC1, cv::Scalar(255));
+
+	int posX=offsetX-wideX;
+	int posY=offsetY-wideY;
+	inner.copyTo(outter(cv::Rect(posX, posY, pw, ph)));
+	cv::Mat inner2(cv::Size(w, h), CV_8UC1, cv::Scalar(0));
+	inner2.copyTo(outter(cv::Rect(offsetX, offsetY, w, h)));
+	return outter;
+}
+
+//--------------------------------------------------------------------
+
+std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name) {
+	std::vector<cv::Mat> result;
+	result.reserve(DIMGS::DATA_SIZE);
+	cv::Mat image=cv::imread(image_name);
+	
+	int r=DIMGS::DATA_SIZE;// /2;
+
+	int paddingW=image.cols/(2*(r+1));
+	int paddingH=image.rows/(2*(r+1));
+
+	int p=2;
+	int wideW=paddingW/p;
+	int wideH=paddingH/p;
+
+	int offsetX=paddingW;
+	int offsetY=paddingH;
+	
+	float kpX=(image.cols*1.0)/(1.0*wideW);
+	float kpY=(image.rows*1.0)/(1.0*wideH);
+
+	cv::Mat total_mask=mkMask2(image);
+	static int t=0;
+	int R=r;
+	
+	for(int i=0; i<R; i++){
+		cv::Mat mask=mkMask2(image, offsetX, offsetY, wideW, wideH);
+
+		mask&=total_mask;
+		if(i%2==0)
+		{
+			result.push_back(getNormalizeHistogram(image, mask));
+		}
+		else{
+			result.push_back(getNormalizeHistogramG(image, mask));//*/
+		}
+		
+		offsetX+=paddingW;
+		offsetY+=paddingH;
+		
+		wideW=(1.0*(image.cols-2*offsetX))/kpX;
+		wideH=(1.0*(image.rows-2*offsetY))/kpY;
+	}
+
+	return result;
+}
+
+//----------------------------------------------------------------------
+
 std::vector<cv::Mat> getNormalizeHistogram8(const char* image_name) {
 	std::vector<cv::Mat> result;
 	result.reserve(DIMGS::DATA_SIZE);

@@ -22,7 +22,7 @@ PictureViewer::PictureViewer(wxPanel* parent)
 	vBox2->Add(m_scroller, 1, wxEXPAND, 0);
 	hBox->Add(vBox2, 0, wxEXPAND | wxRIGHT, 10);
 
-	PicWrapper2* rightPanel=PicWrapper2::getInstance(this, wxSize(MIN_WIDTH-c_scrollerWidth, c_scrollerMinHeight), 0);
+	PicWrapper2* rightPanel=PicWrapper2::getInstance(this, wxSize(WX::MIN_WIDTH-c_scrollerWidth, c_scrollerMinHeight), 0);
 	hBox->Add(rightPanel, 1, wxEXPAND, 0);
 	hBox->Layout();
 }

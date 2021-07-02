@@ -36,8 +36,9 @@ class Scheduler {
 	
 		static void start();
 		static void unpause();
-		static bool getData(std::string*& str, bool& startBlock, float& rank);		
+		static bool getData(std::string*& str, bool& startBlock, int& rank);		
 		static bool stopProcessing();
+		static void setSimilarityThreshold(int val);
 
 	private:
 		static std::mutex m_workersMutex;

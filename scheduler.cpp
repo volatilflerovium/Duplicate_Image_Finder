@@ -29,7 +29,7 @@ bool Scheduler::m_ready;
 bool Scheduler::m_stopJob;
 bool Scheduler::m_pausedWorkers;
 bool Scheduler::m_noWork(false);
-int Scheduler::m_pos;
+int Scheduler::m_pos(0);
 
 //----------------------------------------------------------------------
 
@@ -215,7 +215,7 @@ void Scheduler::dumpData(DataBuffer& buffer){
 
 //----------------------------------------------------------------------
 
-bool Scheduler::getData(std::string*& str, bool& startBlock, float& rank){
+bool Scheduler::getData(std::string*& str, bool& startBlock, int& rank){
 	if(m_pos==m_bufferLN.size()){
 		clearBuffers();
 		return false;
@@ -240,6 +240,18 @@ void Scheduler::clearBuffers(){
 	m_bufferLN.clear();
 	m_bufferLNB.clear();
 	m_bufferRank.clear();
+}
+
+//----------------------------------------------------------------------
+
+void Scheduler::setSimilarityThreshold(int val){
+	double threshold=0.9;
+	if(val>0 && val<11){
+		threshold=(1.0*val)/10.0;
+	}
+	for(int i=0; i<m_availableWorkers.size(); i++){
+		m_workers[i]->setSimilarityThreshold(threshold);
+	}
 }
 
 //----------------------------------------------------------------------

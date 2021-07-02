@@ -37,7 +37,7 @@ void ScrolledWidgetsPane::addImage(wxString file, bool newBlock, float rank){
 		m_newBlock=true;
 	}
 		
-	PicWrapper* newPic=new PicWrapper(m_panel, file, wxPoint(0, m_height), m_width);
+	PicWrapper* newPic=new PicWrapper(m_panel, wxPoint(0, m_height), m_width, file, rank);
 	
 	m_height+=newPic->getHeight();
 

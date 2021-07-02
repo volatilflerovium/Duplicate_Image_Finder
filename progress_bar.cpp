@@ -15,11 +15,6 @@ m_step(0), m_delta(0.0)
 	Connect(wxEVT_PAINT, wxPaintEventHandler(ProgressBar::OnPaint));
 }
 
-/*
-BEGIN_EVENT_TABLE(ProgressBar, wxPanel )
-	EVT_SIZE(ProgressBar::hi)
-END_EVENT_TABLE()
-//*/
 //----------------------------------------------------------------------
 
 void ProgressBar::step(){
@@ -66,17 +61,14 @@ void ProgressBar::OnPaint(wxPaintEvent& event)
 	wxPen pen(wxColour("#80b3ff"));
 	dc.SetPen(pen);
 
-	//dc.DrawRectangle(wxRect(0, 0, m_range, m_height));
 	dc.DrawRectangle(wxRect(0, 0, newWidth, m_height));
 
 	if(m_range-m_position<m_delta){
 		wxBrush brush1(wxColour("#00e600"));
 		dc.SetBrush(brush1);
-		//dc.DrawRectangle(wxRect(0, 0, m_position, m_height));
 		dc.DrawRectangle(wxRect(0, 0, newPosition, m_height));
 	}
 	else{
-		//dc.GradientFillLinear(wxRect(0, 0, m_position, m_height),
 		dc.GradientFillLinear(wxRect(0, 0, newPosition, m_height),
 			wxColour("#00e600"), wxColour("#3399ff"), wxEAST);
 	}

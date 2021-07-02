@@ -20,7 +20,6 @@
 #include "data_logger.h"
 #include "data.h"
 
-// the ID we'll use to identify our event
 enum EVENT_ID
 {
 	EVNT_ADD_PICTURE_ID = 100000,
@@ -72,7 +71,7 @@ class WxWorker : public wxThread
 		void sendEventProgress();
 		void sendEventData(const wxString& data, int val);
 		void sendEventStatus(int status);
-		void sendEventPicture(std::string* pic, bool newBlock, float rank);
+		void sendEventPicture(std::string* pic, bool newBlock, int rank);
 };
 
 //----------------------------------------------------------------------

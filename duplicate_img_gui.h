@@ -39,12 +39,14 @@ class DuplicateImgGUI : public wxFrame
 		PictureViewer* m_pictureViewer;
 		wxPanel* m_bodyPanel;
 		WxWorker* m_worker;
+		wxSlider* m_slider;
 		wxStaticText* m_staticFiles;
 		wxStaticText* m_totalFilesText;
 		NotificationModule* m_board;
 		ProgressBar* m_progressBar;
 		wxButton* m_browseBtn;
 		wxButton* m_startBtn;
+		wxButton* m_resetBtn;
 		wxButton* m_closeBtn;
 		wxButton* m_cancelBtn;
 		wxButton* m_clearBtn;
@@ -54,6 +56,7 @@ class DuplicateImgGUI : public wxFrame
 		void setEnable(int mask);
 		void OnChooseDir(wxCommandEvent& evt);
 		void OnStart(wxCommandEvent& evt);
+		void OnReset(wxCommandEvent& evt);
 		void OnQuit(wxCommandEvent& event);
 		void OnCancel(wxCommandEvent& event);
 		void OnData(wxCommandEvent& event);
@@ -62,6 +65,7 @@ class DuplicateImgGUI : public wxFrame
 		void OnAddPic(wxCommandEvent& event);
 		void OnClear(wxCommandEvent& event);
 		void OnClose(wxCloseEvent& event);
+		void OnSliderChange(wxScrollEvent &event);
 
 		struct
 		{

@@ -8,8 +8,8 @@ NotificationModule* NotificationModule::m_instance(nullptr);
 NotificationModule::NotificationModule(wxPanel* parent)
 : wxPanel(parent)
 {
-	SetMinSize(wxSize(MIN_WIDTH, 30));
-	SetSize(wxSize(MIN_WIDTH, 30));
+	SetMinSize(wxSize(WX::MIN_WIDTH, 30));
+	SetSize(wxSize(WX::MIN_WIDTH, 30));
 
 	wxBoxSizer* hbox = new wxBoxSizer(wxHORIZONTAL);
 	const int lineHeight=30;
@@ -24,7 +24,7 @@ NotificationModule::NotificationModule(wxPanel* parent)
 	m_rankText=new wxStaticText(this, -1, wxT("     "), wxDefaultPosition,  wxSize(70, lineHeight), wxALIGN_RIGHT);
 	width+=m_rankText->GetSize().GetWidth();
 	
-	m_filePathText=new wxStaticText(this, -1, wxT(""),  wxDefaultPosition, wxSize(MIN_WIDTH-width, lineHeight), wxST_ELLIPSIZE_MIDDLE);
+	m_filePathText=new wxStaticText(this, -1, wxT(""),  wxDefaultPosition, wxSize(WX::MIN_WIDTH-width, lineHeight), wxST_ELLIPSIZE_MIDDLE);
 	
 	hbox->Add(m_filePathText, 1, wxEXPAND, 10);
 	hbox->Add(staticRank, 0);
@@ -36,9 +36,8 @@ NotificationModule::NotificationModule(wxPanel* parent)
 }
 
 //----------------------------------------------------------------------
+
 NotificationModule::~NotificationModule(){
-	//std::cout<<"NotificationModule destructor\n";
-	//wxDELETE(m_hbox);
 	wxDELETE(m_filePathText);
 	wxDELETE(m_rankText);
 }
@@ -58,6 +57,20 @@ NotificationModule* NotificationModule::init(wxPanel* parent){
 void NotificationModule::setLabels(const wxString& filePath, float rank){
 	m_filePathText->SetLabel(filePath);
 	m_rankText->SetLabel(wxString::Format(wxT("%0.4f"), rank));
+	Layout();
+}
+
+//----------------------------------------------------------------------
+
+void NotificationModule::Clear(){
+	m_instance->clear();
+}
+
+//----------------------------------------------------------------------
+
+void NotificationModule::clear(){
+	m_filePathText->SetLabel(wxT(""));
+	m_rankText->SetLabel(wxT(""));
 	Layout();
 }
 

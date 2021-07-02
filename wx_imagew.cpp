@@ -56,6 +56,7 @@ void wxImageW::reLoadImage(){
 	else{
 		*m_image=wxBitmap(wxImageFromMat(m_file.mb_str()));
 	}
+	
 	m_imageWidth=m_image->GetWidth();
 	m_imageHeight=m_image->GetHeight();
 }
@@ -67,7 +68,6 @@ void wxImageW::loadImage(const wxString& file){
 	m_isSupported=true;
 	reLoadImage();
 	resizeImage();
-	paintNow();
 }
 
 //----------------------------------------------------------------------
@@ -75,7 +75,6 @@ void wxImageW::loadImage(const wxString& file){
 void wxImageW::loadImage(const wxString& file, int width, int height){
 	m_file=file;
 	m_isSupported=true;
-	
 	reLoadImage();
 	
 	SetSize(width, height);

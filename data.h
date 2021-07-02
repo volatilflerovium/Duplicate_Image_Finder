@@ -16,10 +16,9 @@
 namespace DIMGS
 {
 	const int DATA_SIZE=8;
-	const float THRESH=0.98;//0.70; //0.98
 	const int BLOCK_SIZE=50;
-	const int STOP=1;
-	const int PREPARE=0;
+	const int FLOAT_FACTOR=10000;
+	const float INV_FLOAT_FACTOR=1.0/(1.0*FLOAT_FACTOR);
 }
 
 //======================================================================
@@ -48,7 +47,7 @@ struct DataBuffer
 {
 	std::vector<int> m_lines;
 	std::vector<bool> m_blocks;
-	std::vector<float> m_ranks;
+	std::vector<int> m_ranks;
 	
 	DataBuffer(int n){
 		m_lines.reserve(n);
@@ -65,23 +64,6 @@ struct DataBuffer
 	int size() const{
 		return m_lines.size();
 	}
-};
-
-//======================================================================
-
-namespace WX{
-	enum 
-	{
-		BROWSE=101,
-		PICTURE_SCROLLER,
-		PICTURE_VIWER,
-		ADD_PIC,
-		CLEAR,
-		START,
-		CANCEL,
-		DELETE_IMG,
-		OPEN_IMG,
-	};
 };
 
 //======================================================================

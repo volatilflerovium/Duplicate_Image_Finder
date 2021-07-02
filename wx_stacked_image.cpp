@@ -21,15 +21,15 @@ PicWrapper2* PicWrapper2::getInstance(wxPanel* parent, const wxSize& size, int p
 	}
 	return m_instance;
 }
-		
+
 //----------------------------------------------------------------------
 
 PicWrapper2::PicWrapper2(wxPanel* parent, const wxSize& size, int padding)
 :wxPanel2(parent, wxDefaultPosition), m_pic(nullptr), 
-m_padding(padding)//, m_xx(false)
+m_padding(padding)
 {
 	wxColour bkgColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND));
-	SetBackgroundColour(bkgColour);//wxColour(wxT("yellow")));
+	SetBackgroundColour(bkgColour);
 	SetMinSize(size);
 
 	wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
@@ -74,8 +74,6 @@ void PicWrapper2::loadImage(const wxString& file){
 void PicWrapper2::resize(wxSizeEvent& event){	
 	static int w=0;
 	static int h=0;
-	//Layout();
-	//event.Skip();
 
 	int width, height;
 	GetSize(&width, &height);
@@ -111,20 +109,8 @@ END_EVENT_TABLE()
 
 //----------------------------------------------------------------------
 
-wxStackedImage::wxStackedImage(wxPanel* parent, wxString file)
-:wxImageW(parent, file)
-{}
-
-//----------------------------------------------------------------------
-
-wxStackedImage::wxStackedImage(wxPanel* parent, const wxString& file, const wxPoint& pos)
-:wxImageW(parent, file, pos)
-{}
-
-//----------------------------------------------------------------------
-
-wxStackedImage::wxStackedImage(wxPanel* parent, const wxString& file, const wxPoint& pos, int width)
-:wxImageW(parent, file, pos, width)
+wxStackedImage::wxStackedImage(wxPanel* parent, const wxPoint& pos, int width, const wxString& file, float rank)
+:wxImageW(parent, file, pos, width), m_rank(rank)
 {}
 
 //----------------------------------------------------------------------
@@ -136,7 +122,7 @@ void wxStackedImage::OnMouseLeftUp(wxMouseEvent& event){
 	GetParent()->SetBackgroundColour(wxColour(wxT("green")));
 	m_last=this;
 	PicWrapper2::LoadImage(m_file);		
-	NotificationModule::displayData(m_file, 0.12345);
+	NotificationModule::displayData(m_file, m_rank);
 }
 
 //----------------------------------------------------------------------
@@ -183,7 +169,7 @@ void wxStackedImage::clearBackground(){
 //######################################################################
 //######################################################################
 
-PicWrapper::PicWrapper(wxPanel* parent, const wxString& file, const wxPoint& pos, int width)
+PicWrapper::PicWrapper(wxPanel* parent, const wxPoint& pos, int width, const wxString& file, float rank)
 :wxPanel2(parent, pos)
 {
 	SetBackgroundColour(wxColour(wxT("white")));
@@ -191,7 +177,7 @@ PicWrapper::PicWrapper(wxPanel* parent, const wxString& file, const wxPoint& pos
 	SetSizer(vbox);
 	
 	m_padding=c_picPadding;
-	m_pic=new wxStackedImage(this, file, wxPoint(m_padding, m_padding), width-2*m_padding);
+	m_pic=new wxStackedImage(this, wxPoint(m_padding, m_padding), width-2*m_padding, file, rank);
 
 	SetSize(width, m_pic->getHeight()+2*m_padding);
 	vbox->Add(m_pic, 0, wxALL, m_padding);

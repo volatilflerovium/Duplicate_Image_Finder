@@ -51,18 +51,13 @@ class PicWrapper2 : public wxPanel2
 class wxStackedImage : public wxImageW
 {
 	public:
-		wxStackedImage(wxPanel* parent, wxString file);
-		wxStackedImage(wxPanel* parent, const wxString& file, const wxPoint& pos);
-		wxStackedImage(wxPanel* parent, const wxString& file, const wxPoint& pos, int width);
-
-		wxStackedImage(wxPanel* parent, wxString file, const wxPoint& pos, int width, int height);
-
+		wxStackedImage(wxPanel* parent, const wxPoint& pos, int width, const wxString& file, float rank);
 		virtual ~wxStackedImage(){};
-
 		static void clearBackground();
 
 	private:
 		static wxStackedImage* m_last;
+		float m_rank;
 
 		void OnOpenImg(wxCommandEvent& event);
 		void OnDeleteImg(wxCommandEvent& event);
@@ -79,7 +74,7 @@ class wxStackedImage : public wxImageW
 class PicWrapper : public wxPanel2
 {
 	public:
-		PicWrapper(wxPanel* parent, const wxString& file, const wxPoint& pos, int width);
+		PicWrapper(wxPanel* parent, const wxPoint& pos, int width, const wxString& file, float rank);
 
 		virtual ~PicWrapper(){
 			wxDELETE(m_pic);
@@ -89,13 +84,6 @@ class PicWrapper : public wxPanel2
 		wxStackedImage* m_pic;
 		int m_padding;
 };
-
-/*
-inline int PicWrapper::getHeight() const{
-	int x, y;
-	GetSize(&x, &y);
-	return y;
-}//*/
 
 //######################################################################
 //######################################################################

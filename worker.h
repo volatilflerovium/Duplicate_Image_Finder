@@ -22,7 +22,8 @@ class Worker {
 		Worker(int id, int position, int step)
 		:
 			m_ulock(std::unique_lock<std::mutex>(m_mtx)),
-			m_data(nullptr), m_wid(id), m_step(step), m_position(position), 
+			m_data(nullptr), m_similarityThreshold(0.9), 
+			m_wid(id), m_step(step), m_position(position), 
 			m_running(true), m_ready(false), m_exitJob(false)
 		{}
 
@@ -41,9 +42,11 @@ class Worker {
 		}
 		
 		void makeReady(){
-			//Logger::log("Stopping worker job: ", m_wid);
-			//m_ready=false;
 			m_exitJob=false;	
+		}
+		
+		void setSimilarityThreshold(double threshold){
+			m_similarityThreshold=threshold;
 		}
 	
 	private:
@@ -52,6 +55,7 @@ class Worker {
 		std::mutex m_mtx;
 		std::unique_lock<std::mutex> m_ulock;
 		const Data* m_data;
+		double m_similarityThreshold;
 		const int m_wid;
 		const int m_step;
 		const int m_position;

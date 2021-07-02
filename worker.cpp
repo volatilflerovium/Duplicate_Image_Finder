@@ -90,13 +90,12 @@ void Worker::findSimilarImages(){
 		m_data->m_mode ? startAt=i+1: startAt=0;
 
 		picRanks.clear();
-		rLineNumber.clear();
+		rLineNumber.clear();	
+		
 		for(int j=startAt; j<m_data->m_sentinelR; j++){
 			if(m_exitJob){
-				Printer::logData("Worker: ",  m_wid, " Positions: i: ", i, " j: ", j);
 				break;
 			}
-			//Logger::log("Worker: ",  m_wid, " Positions: i: ", i, " j: ", j);
 	
 			chunk2=j*DIMGS::DATA_SIZE;
 			if((m_data->m_histogramsR[chunk2]).rows==0){
@@ -104,12 +103,14 @@ void Worker::findSimilarImages(){
 			}
 
 			similarity=0;
+			double ss=0;
 			for(int k=0; k<DIMGS::DATA_SIZE; k++){
-				similarity+=cv::compareHist((m_data->m_histogramsL)[chunk1+k], (m_data->m_histogramsR)[chunk2+k], cv::HISTCMP_CORREL);
+				similarity+=cv::compareHist((m_data->m_histogramsL)[chunk1+k], (m_data->m_histogramsR)[chunk2+k], cv::HISTCMP_BHATTACHARYYA);
 			}
 			similarity*=averageFactor;
+			similarity=1-similarity;
 
-			if(similarity>DIMGS::THRESH){
+			if(similarity>=m_similarityThreshold){
 				sorting(rLineNumber, picRanks, j, similarity);				
 			}
 
@@ -119,11 +120,9 @@ void Worker::findSimilarImages(){
 		}
 		chunk1+=DIMGS::DATA_SIZE;
 		if(rLineNumber.size()>0){
-			//Logger::log("Testing: ", (m_data->m_picsL)[i], " wk: ", m_wid);
-			buffer.insert(i, 1.0, true);
+			buffer.insert(i, DIMGS::FLOAT_FACTOR, true);
 			for(int k=0; k<rLineNumber.size(); k++){
-				//Logger::log((m_data->m_picsR)[rLineNumber[k]]," ", picRanks[k], " wk: ", m_wid);			
-				buffer.insert(rLineNumber[k], picRanks[k], false);
+				buffer.insert(rLineNumber[k], picRanks[k]*DIMGS::FLOAT_FACTOR, false);
 				if(k>4){
 					break;
 				}

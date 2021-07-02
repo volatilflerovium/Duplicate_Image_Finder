@@ -48,6 +48,10 @@ cv::Mat getNormalizeHistogramG(const cv::Mat& img, const cv::Mat& mask);
 
 cv::Mat getNormalizeHistogram(const cv::Mat& img, const cv::Mat& mask);
 
+
+cv::Mat mkMask2(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wideY);
+std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name);
+
 std::vector<cv::Mat> getNormalizeHistogram8(const char* image_name);
 
 void loadHist(std::vector<cv::Mat>& hists, const std::string& dir, int j);
