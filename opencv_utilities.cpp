@@ -155,6 +155,9 @@ cv::Mat getNormalizeHistogram(const cv::Mat& img, const cv::Mat& mask) {
 }
 
 //--------------------------------------------------------------------
+//#############################
+//#############################
+
 
 cv::Mat mkMask2(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wideY){
 	int w=img.size().width-2*offsetX;

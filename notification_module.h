@@ -1,5 +1,5 @@
 /*********************************************************************
-* NotificationModule class                                   			   *
+* NotifyLabel class                                   			   *
 *                                                                    *
 * Version: 1.0                                                       *
 * Date:    24-06-2021                                                *
@@ -7,7 +7,6 @@
 **********************************************************************/
 #ifndef NOTIFICATION_MODULE_H
 #define NOTIFICATION_MODULE_H
-
 
 #include <wx/wx.h>
 

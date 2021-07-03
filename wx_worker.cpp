@@ -46,7 +46,6 @@ wxThread::ExitCode WxWorker::Entry(){
 		if(m_fileList){
 			
 			if(mkHist()){
-				m_skipHist=false;
 				m_ready=false;
 				m_cv.wait(m_ulock, [this]{return this->m_ready;});
 
@@ -55,8 +54,6 @@ wxThread::ExitCode WxWorker::Entry(){
 				}
 			}
 
-			m_fileList=nullptr;
-		
 			if(m_cancelled){
 				sendEventStatus(WorkCancelled);
 				Scheduler::unpause();
@@ -66,7 +63,9 @@ wxThread::ExitCode WxWorker::Entry(){
 				sendEventStatus(SearchFinish);
 			}
 		}
+		m_skipHist=false;
 	}
+
 	return 0;
 }
 
@@ -114,6 +113,7 @@ bool WxWorker::mkHist(){
 
 	if(!m_stopJob){
 		sendEventData(c_histFinish, lineNumb-1);
+		m_fileList=nullptr;
 		return true;
 	}
 	return false;

@@ -69,13 +69,13 @@ class DuplicateImgGUI : public wxFrame
 
 		struct
 		{
-			const int CANCELLED=2;//cancel: 0010 =2
-			const int FINISHED=2;
-			const int INITIAL_STATE=1;//initial state:  0001 = 1
-			const int CLEAR=1;//clear= initial state
-			const int READY=7;//when files are added: 0111 = 7
-			const int FIND_DUPLICATES=8;//find ducplicates: 1000 = 10	
-			const int RESET=4;
+			const int c_initial{32};//   | 100000 (32)
+			const int c_ready{54};//     | 110110 (32+16+4+2+1= 32+20+3=54)
+			const int c_running{1};//   | 000001 (1)
+			const int c_cancelled{16};// | 010000 (16)
+			const int c_cleared{32};//   | 100000 (32)
+			const int c_finished{24};//  | 011000 (16+8=24)
+			const int c_resetted{30};//  | 011010 (16+8+4+2=30)
 		};
 
 		DECLARE_EVENT_TABLE()		

@@ -158,7 +158,7 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	
 	vBox->Add(hbox_4, 0, wxEXPAND | wxALL, c_windowPadding);
 	
-	setEnable(INITIAL_STATE);
+	setEnable(c_initial);
 
 	m_bodyPanel->SetSizerAndFit(vBox);
 
@@ -223,7 +223,7 @@ void DuplicateImgGUI::OnChooseDir(wxCommandEvent& evt){
 
 		FileManager::removeDuplicates(m_fileList);
 		if(m_fileList.size()>0){
-			setEnable(READY);
+			setEnable(c_ready);
 		}
 		int n=m_fileList.size();
 		m_totalFilesText->SetLabel(wxString::Format(wxT("%d"), n));
@@ -243,12 +243,21 @@ void DuplicateImgGUI::btnEnaDis(wxButton* btn, bool enable){
 //----------------------------------------------------------------------
 
 void DuplicateImgGUI::setEnable(int mask){
-	btnEnaDis(m_browseBtn, static_cast<bool>(mask & 1));
+	/*btnEnaDis(m_browseBtn, static_cast<bool>(mask & 1));
 	btnEnaDis(m_clearBtn, static_cast<bool>(mask & 2));
 	btnEnaDis(m_startBtn, static_cast<bool>(mask & 4));
 	btnEnaDis(m_resetBtn, static_cast<bool>(mask & 2));
 	btnEnaDis(m_cancelBtn, static_cast<bool>(mask & 8));
 	m_slider->Enable(static_cast<bool>(mask & 1));
+	//*/
+	//#############
+	btnEnaDis(m_browseBtn, static_cast<bool>(mask & 32));
+	btnEnaDis(m_clearBtn, static_cast<bool>(mask & 16));
+	btnEnaDis(m_resetBtn, static_cast<bool>(mask & 8));
+	btnEnaDis(m_startBtn, static_cast<bool>(mask & 4));
+	m_slider->Enable(static_cast<bool>(mask & 2));
+	btnEnaDis(m_cancelBtn, static_cast<bool>(mask & 1));
+	
 	Update();
 	Refresh();
 }
@@ -294,10 +303,10 @@ void DuplicateImgGUI::OnUpdateStatus(wxCommandEvent& event){
 	int statusCode=event.GetInt();
 	if(statusCode==SearchFinish){
 		m_progressBar->complete();
-		setEnable(FINISHED);
+		setEnable(c_finished);
 	}
 	else if(statusCode==WorkCancelled){
-		setEnable(CANCELLED);
+		setEnable(c_cancelled);
 	}
 }
 
@@ -306,7 +315,7 @@ void DuplicateImgGUI::OnUpdateStatus(wxCommandEvent& event){
 void DuplicateImgGUI::OnStart(wxCommandEvent & event){
 	if(m_fileList.size()>0){
 		m_progressBar->setUp(m_fileList.size());
-		setEnable(FIND_DUPLICATES);
+		setEnable(c_running);
 		m_worker->setFileList(&m_fileList);
 		m_worker->processJob();
 	}
@@ -322,7 +331,7 @@ void DuplicateImgGUI::OnReset(wxCommandEvent & event){
 	m_progressBar->reset(false);
 	NotificationModule::Clear();
 	m_worker->reset();
-	setEnable(READY);
+	setEnable(c_resetted);
 }
 
 //----------------------------------------------------------------------
@@ -339,14 +348,14 @@ void DuplicateImgGUI::OnClear(wxCommandEvent & event){
 	m_dirList.clear();
 	m_progressBar->reset();
 	NotificationModule::Clear();
-	setEnable(CLEAR);
+	setEnable(c_cleared);
 }
 
 //----------------------------------------------------------------------
 
 void DuplicateImgGUI::OnCancel(wxCommandEvent & event){
 	m_worker->cancel();
-	setEnable(INITIAL_STATE);
+	setEnable(c_cancelled);
 }
 
 //----------------------------------------------------------------------

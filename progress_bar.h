@@ -12,7 +12,6 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/event.h>
-
 //######################################################################
 
 class ProgressBar : public wxPanel

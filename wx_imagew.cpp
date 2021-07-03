@@ -144,7 +144,6 @@ void wxImageW::sizeImage(int width, int height){
 	wxPanel::SetSize(width, height);
 }
 
-//----------------------------------------------------------------------
 
 void wxImageW::SetSize(int width, int height){
 	if(m_image->GetWidth()<m_imageWidth){
