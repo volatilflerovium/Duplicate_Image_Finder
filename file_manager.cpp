@@ -18,6 +18,7 @@ bool FileManager::m_saveSession(false);
 std::map<wxString, wxBitmapType> FileManager::m_filter;
 std::map<wxString, bool> FileManager::m_wxSupported;
 std::map<FileManager::CnstChar, int> FileManager::m_settings;
+
 //----------------------------------------------------------------------
 
 std::string FileManager::mkPath(const char* file){
@@ -70,7 +71,7 @@ std::string FileManager::mkPath(const char* file){
 void FileManager::cleanUp(bool clearAll){
 	if(fileExists(c_DIR_HIST)){
 		remove_all(std::filesystem::path{c_DIR_HIST.c_str()});
-		std::filesystem::create_directory(std::filesystem::path{c_DIR_HIST.c_str()});//, 0777);
+		std::filesystem::create_directory(std::filesystem::path{c_DIR_HIST.c_str()});
 	}
 	
 	if(fileExists(c_FILE_LIST)){
@@ -310,9 +311,8 @@ std::string FileManager::setPath(const char* filePath) {
 		char path[r];
 		std::memcpy(path, buffer, r-1);
 		path[r-1]='\0';
-		//mkdir(path, 0777);//*/
 		
-		std::filesystem::create_directory(std::filesystem::path{path});//, 0777);
+		std::filesystem::create_directory(std::filesystem::path{path});
 	}
 	return filePath;
 }
@@ -397,3 +397,5 @@ SUBDIR FileManager::reduce(const std::string& dirTest, std::vector<std::string>&
 
 	return SUBDIR::IS_NEW;
 }
+
+//----------------------------------------------------------------------

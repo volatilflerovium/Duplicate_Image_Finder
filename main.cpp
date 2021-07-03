@@ -1,6 +1,4 @@
 #include "main.h"
-
-
 #include "wx_worker.h"
 
 IMPLEMENT_APP(MyApp)
@@ -10,7 +8,6 @@ bool MyApp::OnInit()
 	m_simple = new DuplicateImgGUI(wxT("Duplicate Picture Finder"));
 	m_simple->Show(true);
 
-	// create the thread
 	WxWorker* wxWorker = new WxWorker(m_simple);
 	wxThreadError err = wxWorker->Create();
 	
@@ -30,6 +27,5 @@ bool MyApp::OnInit()
 }
 
 void MyApp::OnClose(wxCloseEvent &event){
-	//std::cout<<"closing app!\n";
 }
 

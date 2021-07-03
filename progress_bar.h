@@ -12,20 +12,23 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/event.h>
+
 //######################################################################
 
 class ProgressBar : public wxPanel
 {
 	public:
 		ProgressBar(wxPanel* parent, int width, int height);
+		virtual ~ProgressBar();
 		void setProgress(int prog);
 		void step();
 
 		void setUp(int vRange);
 		void complete();
-		void reset();
+		void reset(bool hard=true);
 
 	private:
+		wxStaticText* m_progressText;
 		const int m_range;
 		const int m_height;
 		int m_position;
@@ -33,21 +36,11 @@ class ProgressBar : public wxPanel
 		float m_delta;
 		
 		void OnPaint(wxPaintEvent& event);
-		/*void hi(wxSizeEvent& event){
-			int currentWidth, h=20;
-			GetSize(&currentWidth, &h);
-			std::cout<<currentWidth<<" ++++++++++++++++\n";
-		};
-
-		DECLARE_EVENT_TABLE()//*/
 };
 
 //----------------------------------------------------------------------
 
-inline void ProgressBar::setUp(int vRange){
-	m_step=0;
-	m_delta=m_range/(vRange*1.0);
-};
+
 
 
 #endif

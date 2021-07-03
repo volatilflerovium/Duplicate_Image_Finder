@@ -99,6 +99,7 @@ void Scheduler::workerFinish(int workerID) {
 	}
 	m_stop_workersMutex.unlock();
 }
+
 //----------------------------------------------------------------------
 
 void Scheduler::terminateWorkers() {
@@ -169,7 +170,6 @@ void Scheduler::workerReady(int workerID) {
 	bool ready;
 	m_workersMutex.lock();
 	ready=true;
-	//Logger::log("Worker: ", workerID, " waiting for work.");
 	m_availableWorkers[workerID]=true;
 	for(int i=0; i<m_availableWorkers.size(); i++){
 		ready=ready && m_availableWorkers[i];

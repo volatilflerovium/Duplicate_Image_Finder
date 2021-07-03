@@ -31,11 +31,15 @@ static void Output2(IO& stream, T t){
 	stream<<t;
 }
 
+//----------------------------------------------------------------------
+
 template<typename IO, typename T, typename... Args>
 static void Output2(IO& stream, T t, Args... args){
 	Output2(stream, std::forward<T>(t));
 	Output2(stream, std::forward<Args>(args)...);			
 }
+
+//----------------------------------------------------------------------
 
 template<typename IO, typename T>
 static void Output(IO& stream, T t){
@@ -43,6 +47,8 @@ static void Output(IO& stream, T t){
 	stream<<t<<"\n";
 #endif
 }
+
+//----------------------------------------------------------------------
 
 template<typename IO, typename T, typename... Args>
 static void Output(IO& stream, T t, Args... args){
@@ -90,6 +96,8 @@ class DataLogger
 		DataLogger()=delete;
 		DataLogger(const DataLogger&)=delete;
 };
+
+//----------------------------------------------------------------------
 
 template<typename... Args>
 void DataLogger::logData(Args... args){

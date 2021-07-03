@@ -35,6 +35,7 @@ wxImageW::wxImageW(wxPanel* parent, const wxString& file, const wxPoint& pos, in
 	reLoadImage();
 	scaleToWidth(width);
 }
+
 //----------------------------------------------------------------------
 
 wxImageW::wxImageW(wxPanel* parent, const wxString& file)
@@ -143,6 +144,7 @@ void wxImageW::sizeImage(int width, int height){
 	wxPanel::SetSize(width, height);
 }
 
+//----------------------------------------------------------------------
 
 void wxImageW::SetSize(int width, int height){
 	if(m_image->GetWidth()<m_imageWidth){

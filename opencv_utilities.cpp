@@ -172,7 +172,6 @@ cv::Mat mkMask2(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wid
 	return outter;
 }
 
-//--------------------------------------------------------------------
 
 std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name) {
 	std::vector<cv::Mat> result;
@@ -220,7 +219,10 @@ std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name) {
 	return result;
 }
 
-//----------------------------------------------------------------------
+
+//#############################
+//#############################
+
 
 std::vector<cv::Mat> getNormalizeHistogram8(const char* image_name) {
 	std::vector<cv::Mat> result;

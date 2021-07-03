@@ -25,7 +25,7 @@ void DataLogger::reset(){
 	m_logFile.seekp(0);
 }
 
-//#####################################################################
+//######################################################################
 
 DataLogger* Printer::m_singleton=nullptr;
 
@@ -35,6 +35,8 @@ void Printer::init(const char* filePath) {
 		static SingletonManager SgM(m_singleton);
 	}
 }
+
+//----------------------------------------------------------------------
 
 void Printer::init(const std::string& filePath)
 {

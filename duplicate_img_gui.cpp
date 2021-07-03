@@ -163,6 +163,8 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	m_bodyPanel->SetSizerAndFit(vBox);
 
 	Centre();
+	
+	//-------------------------------------------------
 }
 
 //----------------------------------------------------------------------
@@ -270,12 +272,11 @@ void DuplicateImgGUI::OnData(wxCommandEvent& event){
 	if(event.GetString()==c_histFinish){
 		int m_totalFiles=event.GetInt();
 		int x=(m_totalFiles+DIMGS::BLOCK_SIZE-1)/DIMGS::BLOCK_SIZE;
-	
+		
 		int totalComp=blockComp(x);
 		if(totalComp>0){
 			m_worker->processJob();
 		}
-
 		m_progressBar->reset();
 		m_progressBar->setUp(totalComp);
 	}
@@ -318,8 +319,9 @@ void DuplicateImgGUI::OnReset(wxCommandEvent & event){
 	HistogramLoader::setChunks(0, 0);
 	m_totalFiles=0;	
 	m_pictureViewer->clear();
-	m_progressBar->reset();
+	m_progressBar->reset(false);
 	NotificationModule::Clear();
+	m_worker->reset();
 	setEnable(READY);
 }
 

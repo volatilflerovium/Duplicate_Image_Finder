@@ -63,8 +63,7 @@ class wxStackedImage : public wxImageW
 		void OnDeleteImg(wxCommandEvent& event);
 		void OnMouseLeftUp(wxMouseEvent& event);
 		void OnMouseRightUp(wxMouseEvent& event);
-		DECLARE_EVENT_TABLE()	
-
+		DECLARE_EVENT_TABLE()
 };
 
 //######################################################################
@@ -85,7 +84,6 @@ class PicWrapper : public wxPanel2
 		int m_padding;
 };
 
-//######################################################################
 //######################################################################
 //######################################################################
 

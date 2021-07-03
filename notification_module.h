@@ -1,5 +1,5 @@
 /*********************************************************************
-* NotifyLabel class                                   			   *
+* NotificationModule class                                   			   *
 *                                                                    *
 * Version: 1.0                                                       *
 * Date:    24-06-2021                                                *

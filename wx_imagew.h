@@ -80,6 +80,7 @@ class wxImageW : public wxPanel2
 		DECLARE_EVENT_TABLE()	
 };
 
+
 //----------------------------------------------------------------------
 
 #endif

@@ -32,23 +32,11 @@ class Worker {
 		void run();
 		void terminate();
 		void stopJob();
-		bool isRunning() const {
-			return m_running;
-		};
+		bool isRunning() const;
+		void notify();
+		void makeReady();
+		void setSimilarityThreshold(double threshold);
 
-		void notify(){
-			m_ready = true;
-			m_cv.notify_one();
-		}
-		
-		void makeReady(){
-			m_exitJob=false;	
-		}
-		
-		void setSimilarityThreshold(double threshold){
-			m_similarityThreshold=threshold;
-		}
-	
 	private:
 		std::condition_variable m_cv;
 		static std::mutex m_bufferMtx;
@@ -65,5 +53,29 @@ class Worker {
 		void findSimilarImages();
 };
 
+//----------------------------------------------------------------------
 
+inline bool Worker::isRunning() const {
+	return m_running;
+};
+
+//----------------------------------------------------------------------
+
+inline void Worker::notify(){
+	m_ready = true;
+	m_cv.notify_one();
+}
+
+//----------------------------------------------------------------------
+
+inline void Worker::makeReady(){
+	m_exitJob=false;	
+}
+
+//----------------------------------------------------------------------
+
+inline void Worker::setSimilarityThreshold(double threshold){
+	m_similarityThreshold=threshold;
+}
+	
 #endif

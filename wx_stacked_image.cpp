@@ -26,10 +26,10 @@ PicWrapper2* PicWrapper2::getInstance(wxPanel* parent, const wxSize& size, int p
 
 PicWrapper2::PicWrapper2(wxPanel* parent, const wxSize& size, int padding)
 :wxPanel2(parent, wxDefaultPosition), m_pic(nullptr), 
-m_padding(padding)
+m_padding(padding)//, m_xx(false)
 {
 	wxColour bkgColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND));
-	SetBackgroundColour(bkgColour);
+	SetBackgroundColour(bkgColour);//wxColour(wxT("yellow")));
 	SetMinSize(size);
 
 	wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
@@ -74,6 +74,8 @@ void PicWrapper2::loadImage(const wxString& file){
 void PicWrapper2::resize(wxSizeEvent& event){	
 	static int w=0;
 	static int h=0;
+	//Layout();
+	//event.Skip();
 
 	int width, height;
 	GetSize(&width, &height);

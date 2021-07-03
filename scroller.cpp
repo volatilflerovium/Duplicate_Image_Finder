@@ -64,10 +64,9 @@ void ScrolledWidgetsPane::clear(){
 	m_panel->SetSize(m_width, m_height);
 	m_panel->SetPosition(wxPoint(0, 0));
 
-	SetScrollbars(1,1, 0, 0, 0, 0);
+	SetScrollbars(1, 1, 0, 0, 0, 0);
 	Scroll(0, 0);
 	m_newBlock=false;
-
 }
 
 //----------------------------------------------------------------------

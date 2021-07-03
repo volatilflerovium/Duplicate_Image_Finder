@@ -12,7 +12,7 @@ WxWorker::WxWorker(wxFrame* parent)
 :m_parent(parent),
 m_fileList(nullptr), 
 	m_running(true), m_ready(false), m_stopJob(false),
-	m_jobCompleted(false), m_cancelled(false)
+	m_jobCompleted(false), m_cancelled(false), m_skipHist(false)
 {
 	m_ulock=std::unique_lock<std::mutex>(m_mtx);
 
@@ -46,6 +46,7 @@ wxThread::ExitCode WxWorker::Entry(){
 		if(m_fileList){
 			
 			if(mkHist()){
+				m_skipHist=false;
 				m_ready=false;
 				m_cv.wait(m_ulock, [this]{return this->m_ready;});
 
@@ -72,8 +73,16 @@ wxThread::ExitCode WxWorker::Entry(){
 //----------------------------------------------------------------------
 
 bool WxWorker::mkHist(){
-	std::ofstream fileList(FileManager::c_FILE_LIST, std::ios::app);
-	int lineNumb=1;
+	static int lineNumb=1;
+
+	if(m_skipHist){
+		sendEventData(c_histFinish, lineNumb-1);
+		return true;
+	}
+	
+	std::ofstream fileList(FileManager::c_FILE_LIST, std::ios::trunc);
+
+	lineNumb=1;
 	for(const std::string& imageName : (*m_fileList)) {
 		if(m_stopJob){
 			break;
@@ -96,7 +105,7 @@ bool WxWorker::mkHist(){
 			lineNumb++;
 		}
 		catch(...){
-			Logger::log("imageName");
+			Logger::log(imageName);
 		}
 		sendEventProgress();
 	}

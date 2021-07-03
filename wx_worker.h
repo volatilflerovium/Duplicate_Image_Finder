@@ -14,7 +14,6 @@
 #include <wx/wx.h>
 #include <wx/panel.h>
 
-
 #include "histogram_loader.h"
 #include "scheduler.h"
 #include "data_logger.h"
@@ -50,7 +49,7 @@ class WxWorker : public wxThread
 		void processJob();
 		void terminate();
 		void cancel();
-	
+		void reset();
 		virtual ExitCode Entry();
 
 	private:
@@ -65,9 +64,11 @@ class WxWorker : public wxThread
 		bool m_stopJob;
 		bool m_jobCompleted;
 		bool m_cancelled;
+		bool m_skipHist;
 
 		void doWork();
 		bool mkHist();
+		
 		void sendEventProgress();
 		void sendEventData(const wxString& data, int val);
 		void sendEventStatus(int status);
@@ -110,7 +111,11 @@ inline void WxWorker::cancel(){
 	Scheduler::pauseWorkers();
 	m_cv.notify_one();
 }
+
 //----------------------------------------------------------------------
 
+inline void WxWorker::reset(){
+	m_skipHist=true;
+}
 
 #endif
