@@ -17,8 +17,8 @@
 #include "picture_viewer.h"
 #include "wx_worker.h"
 #include "progress_bar.h"
-
 #include "notification_module.h"
+#include "LazyTree.h"
 
 //######################################################################
 
@@ -30,9 +30,10 @@ class DuplicateImgGUI : public wxFrame
 		void setWorkerThread(WxWorker* wxWorker);
 
 	private:
-		std::map<wxString, bool> m_filter;
+		std::map<std::string, float> m_matches;
 		std::vector<std::string> m_dirList;
 		std::vector<std::string> m_fileList;
+		LazyTree<std::string> m_lazyTree;
 		wxDirDialog* m_dirDialog;
 		wxTextCtrl* m_currentDir;
 		wxListView* m_directories;
@@ -77,6 +78,34 @@ class DuplicateImgGUI : public wxFrame
 			const int c_finished{24};//  | 011000 (16+8=24)
 			const int c_resetted{30};//  | 011010 (16+8+4+2=30)
 		};
+
+/*
+browse | clear | reset | start | slider | cancel
+1      |   0   |   0   |  0    |   0    |   0     << initial
+1      |   1   |   0   |  1    |   1    |   0     << ready (files loaded)
+0      |   0   |   0   |  0    |   0    |   1     << running
+0      |   1   |   0   |  0    |   0    |   0     << cancelled
+1      |   0   |   0   |  0    |   0    |   0     << cleared
+0      |   1   |   1   |  0    |   0    |   0     << finished
+0      |   1   |   1   |  1    |   1    |   0     << resetted
+       |       |       |       |        |
+32     |   16  |   8   |  4    |   2    |   1
+
+initial   | 100000 (32)
+ready     | 110110 (32+16+4+2+1= 32+20+3=54)
+running   | 000001 (1)
+cancelled | 010000 (16)
+cleared   | 100000 (32)
+finished  | 011000 (16+8=24)
+resetted  | 011110 (16+8+4+2=30)
+
+btnEnaDis(m_browseBtn, static_cast<bool>(mask & 32));
+btnEnaDis(m_clearBtn, static_cast<bool>(mask & 16));
+btnEnaDis(m_resetBtn, static_cast<bool>(mask & 8);
+btnEnaDis(m_startBtn, static_cast<bool>(mask & 4));
+m_slider->Enable(static_cast<bool>(mask & 2));
+btnEnaDis(m_cancelBtn, static_cast<bool>(mask & 1));
+//*/
 
 		DECLARE_EVENT_TABLE()		
 };

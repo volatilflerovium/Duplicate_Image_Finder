@@ -7,7 +7,8 @@
 #include "wx_constants.h"
 
 DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
-: wxFrame(NULL, -1, title, wxPoint(-1, -1)), m_totalFiles(0)
+: wxFrame(NULL, -1, title, wxPoint(-1, -1)), 
+m_lazyTree(&m_fileList), m_totalFiles(0)
 {
 	FileManager::init();
 
@@ -165,6 +166,17 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	Centre();
 	
 	//-------------------------------------------------
+	
+	/*
+	 * TODO:
+	 * 
+	 * remove duplicated image listing
+	 * 
+	 * 
+	 * 
+	 * */
+	
+	//-------------------------------------------------
 }
 
 //----------------------------------------------------------------------
@@ -243,14 +255,6 @@ void DuplicateImgGUI::btnEnaDis(wxButton* btn, bool enable){
 //----------------------------------------------------------------------
 
 void DuplicateImgGUI::setEnable(int mask){
-	/*btnEnaDis(m_browseBtn, static_cast<bool>(mask & 1));
-	btnEnaDis(m_clearBtn, static_cast<bool>(mask & 2));
-	btnEnaDis(m_startBtn, static_cast<bool>(mask & 4));
-	btnEnaDis(m_resetBtn, static_cast<bool>(mask & 2));
-	btnEnaDis(m_cancelBtn, static_cast<bool>(mask & 8));
-	m_slider->Enable(static_cast<bool>(mask & 1));
-	//*/
-	//#############
 	btnEnaDis(m_browseBtn, static_cast<bool>(mask & 32));
 	btnEnaDis(m_clearBtn, static_cast<bool>(mask & 16));
 	btnEnaDis(m_resetBtn, static_cast<bool>(mask & 8));
@@ -265,12 +269,20 @@ void DuplicateImgGUI::setEnable(int mask){
 //----------------------------------------------------------------------
 
 void DuplicateImgGUI::OnAddPic(wxCommandEvent& event){
+	static bool a=false;
+	static int id=-1;
 	bool newBlock=false;
 	float rank=(1.0*event.GetInt())*DIMGS::INV_FLOAT_FACTOR;
 	if(event.GetInt()<0){
 		newBlock=true;
 		rank*=-1.0;
+		id=m_lazyTree.find(event.GetString().ToStdString());
 	}
+	if(!newBlock){
+		
+	}
+	a=newBlock;
+	
 	m_pictureViewer->loadPicture(event.GetString().ToStdString(), newBlock, rank);
 }
 
@@ -318,6 +330,7 @@ void DuplicateImgGUI::OnStart(wxCommandEvent & event){
 		setEnable(c_running);
 		m_worker->setFileList(&m_fileList);
 		m_worker->processJob();
+		m_lazyTree.sort();
 	}
 }
 

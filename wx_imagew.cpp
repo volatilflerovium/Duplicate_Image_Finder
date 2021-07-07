@@ -57,7 +57,7 @@ void wxImageW::reLoadImage(){
 	else{
 		*m_image=wxBitmap(wxImageFromMat(m_file.mb_str()));
 	}
-	
+
 	m_imageWidth=m_image->GetWidth();
 	m_imageHeight=m_image->GetHeight();
 }
@@ -66,7 +66,7 @@ void wxImageW::reLoadImage(){
 
 void wxImageW::loadImage(const wxString& file){
 	m_file=file;
-	m_isSupported=true;
+	m_isSupported=FileManager::isWXsuported(file);
 	reLoadImage();
 	resizeImage();
 }
@@ -75,7 +75,7 @@ void wxImageW::loadImage(const wxString& file){
 
 void wxImageW::loadImage(const wxString& file, int width, int height){
 	m_file=file;
-	m_isSupported=true;
+	m_isSupported=FileManager::isWXsuported(file);
 	reLoadImage();
 	
 	SetSize(width, height);
@@ -86,7 +86,7 @@ void wxImageW::loadImage(const wxString& file, int width, int height){
 
 void wxImageW::wallPaper(const wxString& file){
 	m_file=file;
-	m_isSupported=true;
+	m_isSupported=FileManager::isWXsuported(file);
 
 	reLoadImage();
 
@@ -144,6 +144,7 @@ void wxImageW::sizeImage(int width, int height){
 	wxPanel::SetSize(width, height);
 }
 
+//----------------------------------------------------------------------
 
 void wxImageW::SetSize(int width, int height){
 	if(m_image->GetWidth()<m_imageWidth){
@@ -182,7 +183,6 @@ wxImage wxImageW::wxImageFromMat(const char* file){
 
 	long imsize = im2.rows*im2.cols*im2.channels();
 	unsigned char* storage=static_cast<unsigned char*>(operator new(imsize));
-	//wxImage wx(im2.cols, im2.rows,(unsigned char*)malloc(imsize), false);
 	wxImage wx(im2.cols, im2.rows, storage, false);
 	unsigned char* s=im2.data;
 	unsigned char* d=wx.GetData();

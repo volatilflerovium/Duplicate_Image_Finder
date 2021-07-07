@@ -4,6 +4,7 @@
 * Version: 1.0                                                       *
 * Date:    22-06-2021                                                *
 * Author:  Dan Machado                                               *
+* Note: partially taken from https://wiki.wxwidgets.org/An_image_panel *
 **********************************************************************/
 #ifndef WX_IMAGEW_H
 #define WX_IMAGEW_H

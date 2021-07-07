@@ -44,7 +44,6 @@ wxThread::ExitCode WxWorker::Entry(){
 		m_cv.wait(m_ulock, [this]{return this->m_ready;});
 		
 		if(m_fileList){
-			
 			if(mkHist()){
 				m_ready=false;
 				m_cv.wait(m_ulock, [this]{return this->m_ready;});
@@ -80,6 +79,10 @@ bool WxWorker::mkHist(){
 	}
 	
 	std::ofstream fileList(FileManager::c_FILE_LIST, std::ios::trunc);
+
+	/*use this when std::ofstream fileList(FileManager::c_FILE_LIST)
+	 * fileList<<"w";
+	fileList.seekp(0);//*/
 
 	lineNumb=1;
 	for(const std::string& imageName : (*m_fileList)) {

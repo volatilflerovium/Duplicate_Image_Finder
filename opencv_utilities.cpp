@@ -155,9 +155,6 @@ cv::Mat getNormalizeHistogram(const cv::Mat& img, const cv::Mat& mask) {
 }
 
 //--------------------------------------------------------------------
-//#############################
-//#############################
-
 
 cv::Mat mkMask2(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wideY){
 	int w=img.size().width-2*offsetX;
@@ -175,6 +172,7 @@ cv::Mat mkMask2(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wid
 	return outter;
 }
 
+//--------------------------------------------------------------------
 
 std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name) {
 	std::vector<cv::Mat> result;
@@ -202,14 +200,13 @@ std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name) {
 	
 	for(int i=0; i<R; i++){
 		cv::Mat mask=mkMask2(image, offsetX, offsetY, wideW, wideH);
-
 		mask&=total_mask;
 		if(i%2==0)
 		{
 			result.push_back(getNormalizeHistogram(image, mask));
 		}
 		else{
-			result.push_back(getNormalizeHistogramG(image, mask));//*/
+			result.push_back(getNormalizeHistogramG(image, mask));
 		}
 		
 		offsetX+=paddingW;
@@ -222,10 +219,7 @@ std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name) {
 	return result;
 }
 
-
-//#############################
-//#############################
-
+//--------------------------------------------------------------------
 
 std::vector<cv::Mat> getNormalizeHistogram8(const char* image_name) {
 	std::vector<cv::Mat> result;
@@ -257,7 +251,6 @@ std::vector<cv::Mat> getNormalizeHistogram8(const char* image_name) {
 
 	return result;
 }
-
 
 //--------------------------------------------------------------------
 

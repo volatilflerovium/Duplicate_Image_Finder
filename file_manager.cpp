@@ -228,7 +228,10 @@ bool FileManager::isSuported(const wxString& wxStr){
 bool FileManager::isWXsuported(const wxString& wxStr){
 	std::size_t n=wxStr.find_last_of('.');
 	if(n!= std::string::npos){
-		return m_wxSupported.find(wxStr.substr(n+1))!=m_wxSupported.end();
+		std::map<wxString, bool>::iterator it=m_wxSupported.find(wxStr.substr(n+1));
+		if(it!=m_wxSupported.end()){
+			return it->second;
+		}
 	}
 	return false;
 }
