@@ -35,5 +35,20 @@ As it uses OpenCV, it supports the following formats:
 * Radiance HDR - *.hdr, *.pic
 * Raster and Vector geospatial data supported by GDAL
 
+## How does it work?
+For each image Duplicate Image Finder calculates a set of concentric mask
+proportional to the image and use these to get a set of histograms.
 
-It uses OpenCV and wxWidgets.
+We have two basic consequences of this:
+
+* if one image is a rotated or reflected version of another, both 
+will have the same set of histograms.
+
+* each concentric histogram contains information of the images of a particular
+region of it. Two images can have the same histogram globally, however
+they can have different local histograms.
+
+See, a simple technique with powerfull results.
+
+## GUI
+The GUI is build using [wxWidgets](https://www.wxwidgets.org)
