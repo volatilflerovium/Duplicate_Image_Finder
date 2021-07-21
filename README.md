@@ -36,6 +36,27 @@ As it uses OpenCV, it supports the following formats:
 * Raster and Vector geospatial data supported by GDAL
 
 ## How does it work?
+Some methods to compare two images are:
+
+*	Hashing
+		Two identical files at binary level will produce the same hash sum.
+
+*	MSE
+		Mean Squared Error between the two images is the sum of the squared difference between the two images. The lower the error, the more “similar” the images are.
+
+*	SSIM
+		Structural Similarity Index method is more involved than the MSE method, 
+		but the gist is that SSIM attempts to model the perceived change in the 
+		structural information of the image, whereas MSE is actually estimating 
+		the perceived errors.
+
+*	AI
+		There are deep learning-based image similarity methods that we can utilize, particularly siamese networks. Siamese networks are super powerful models that can be trained with very little data to compute accurate image similarity scores.
+
+It would have been easy to implement any of these method after all everybody can
+copy-and-paste. Instead, I developed a simple algorithm to find duplicated
+images which is invariant to rotations, reflexion and, to some degree, size.
+
 For each image Duplicate Image Finder calculates a set of concentric mask
 proportional to the image and use these to get a set of histograms.
 
