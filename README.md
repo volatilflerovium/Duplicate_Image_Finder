@@ -15,7 +15,6 @@ Via a terminal run:
 ```
 chmod ugo x ~/path/to/wxDuplicate_Image_Finder-x86_64.AppImage
 ```
-
 Using the graphical interface: right-clicking on it, select Properties , 
 and then on the Permissions tab , check the box next to Allow executing file as program.
 
@@ -36,6 +35,7 @@ As it uses OpenCV, it supports the following formats:
 * Raster and Vector geospatial data supported by GDAL
 
 ## How does it work?
+
 Some methods to compare two images are:
 
 *	Hashing
@@ -53,8 +53,8 @@ Some methods to compare two images are:
 *	AI
 		There are deep learning-based image similarity methods that we can utilize, particularly siamese networks. Siamese networks are super powerful models that can be trained with very little data to compute accurate image similarity scores.
 
-It would have been easy to implement any of these method after all everybody can
-copy-and-paste. Instead, I developed a simple algorithm to find duplicated
+It would have been easy to implement any of these methods, after all everybody can
+copy-and-paste. Instead, Duplicate Image Finder implement a simple algorithm to find duplicated
 images which is invariant to rotations, reflexion and, to some degree, size.
 
 For each image Duplicate Image Finder calculates a set of concentric mask
@@ -69,7 +69,7 @@ will have the same set of histograms.
 region of it. Two images can have the same histogram globally, however
 they can have different local histograms.
 
-See, a simple technique with powerfull results.
+The power of the humble histogram.
 
 ## GUI
-The GUI is build using [wxWidgets](https://www.wxwidgets.org)
+The GUI is build using [wxWidgets](https://www.wxwidgets.org).
