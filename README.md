@@ -34,7 +34,7 @@ As it uses OpenCV, it supports the following formats:
 * Radiance HDR - *.hdr, *.pic
 * Raster and Vector geospatial data supported by GDAL
 
-## How does it work?
+## The power of the humble histogram
 
 Some methods to compare two images are:
 
@@ -66,10 +66,9 @@ We have two basic consequences of this:
 will have the same set of histograms.
 
 * each concentric histogram contains information of the images of a particular
-region of it. Two images can have the same histogram globally, however
-they can have different local histograms.
+region of it. Globally, two images can have the same histogram, however
+locally they can have different histograms.
 
-The power of the humble histogram.
 
 ## GUI
-The GUI is build using [wxWidgets](https://www.wxwidgets.org).
+The GUI is built using [wxWidgets](https://www.wxwidgets.org).
