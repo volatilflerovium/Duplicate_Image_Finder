@@ -129,6 +129,9 @@ class Printer
 			m_singleton->logData(std::forward<Args>(args)...);
 		}
 
+		~Printer()
+		{}
+
 	private:
 		static DataLogger* m_singleton;
 

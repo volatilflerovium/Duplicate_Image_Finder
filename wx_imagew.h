@@ -26,7 +26,9 @@ class wxPanel2 : public wxPanel
 		wxPanel2(wxPanel* parent, const wxPoint& pos)
 		: wxPanel(parent, wxID_ANY, pos)
 		{}
-		
+
+		~wxPanel2()
+		{}
 		
 		int getHeight() const{
 			int x, y;

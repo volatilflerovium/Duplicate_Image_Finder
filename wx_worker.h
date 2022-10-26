@@ -45,6 +45,8 @@ class WxWorker : public wxThread
 	public:
 		WxWorker(wxFrame* parent);
 
+		~WxWorker(){}
+
 		void setFileList(std::vector<std::string>* fileList);
 		void processJob();
 		void terminate();

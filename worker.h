@@ -27,6 +27,9 @@ class Worker {
 			m_running(true), m_ready(false), m_exitJob(false)
 		{}
 
+		~Worker()
+		{}
+
 		void setRequest(const Data* data);
 
 		void run();
