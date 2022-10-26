@@ -73,6 +73,32 @@ locally they can have different histograms.
 
 The GUI is built using [wxWidgets](https://www.wxwidgets.org).
 
+# How to use it
+
 In the following image we see the components of the GUI:
 
 ![Example](http://103.102.44.126/img/dpf0.png)
+
+- Add directories that contain pictures using the Directory field or the Browser button. The list of the directores
+where to search for duplicates will be listed in the Directories area,
+
+- Select the level of similarity,
+
+- Clear button will remove the files currently loaded in the application,
+
+- Reset button will reset the application to the initial state, i.e, ready to run it again with the same files,
+
+- Start button starts application searching for duplicates based on the selected level of similarity,
+
+- Cancel button stop the application
+
+# Results
+
+Thumbnails of the similar images are grouped at the left of the main area. In the following
+image we see three groups of smilar images:
+
+![Example](http://103.102.44.126/img/dpf1.png)
+
+Second image of the second group:
+
+![Example](http://103.102.44.126/img/dpf2.png)
