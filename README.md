@@ -102,3 +102,5 @@ image we see three groups of smilar images:
 Second image of the second group:
 
 ![Example](http://103.102.44.126/img/dpf2.png)
+
+Pretty good for the humble histogram!
