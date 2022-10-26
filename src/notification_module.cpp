@@ -1,5 +1,5 @@
-#include "notification_module.h"
-#include "wx_constants.h"
+#include "../include/notification_module.h"
+#include "../include/wx_constants.h"
 
 NotificationModule* NotificationModule::m_instance(nullptr);
 

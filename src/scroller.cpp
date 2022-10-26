@@ -1,7 +1,7 @@
 #include <iostream>
-#include "scroller.h"
-#include "wx_stacked_image.h"
-#include "wx_constants.h"
+#include "../include/scroller.h"
+#include "../include/wx_stacked_image.h"
+#include "../include/wx_constants.h"
 
 //######################################################################
 

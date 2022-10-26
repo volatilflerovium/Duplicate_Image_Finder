@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#include "file_manager.h"
-#include "data_logger.h"
+#include "../include/file_manager.h"
+#include "../include/data_logger.h"
 
 const std::string FileManager::c_APPLICATION_DIR(FileManager::mkPath("applicationDir"));
 const std::string FileManager::c_IMG_BACKGROUND(FileManager::mkPath("imgBackground"));

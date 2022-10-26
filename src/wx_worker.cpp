@@ -1,10 +1,9 @@
-#include "opencv_utilities.h"
-#include "histogram_loader.h"
-#include "scheduler.h"
-#include "data_logger.h"
-#include "file_manager.h"
-
-#include "wx_worker.h"
+#include "../include/opencv_utilities.h"
+#include "../include/histogram_loader.h"
+#include "../include/scheduler.h"
+#include "../include/data_logger.h"
+#include "../include/file_manager.h"
+#include "../include/wx_worker.h"
 
 //----------------------------------------------------------------------
 

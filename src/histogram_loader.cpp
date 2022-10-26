@@ -1,6 +1,6 @@
 #include <iostream>
-#include "histogram_loader.h"
-#include "data_logger.h"
+#include "../include/histogram_loader.h"
+#include "../include/data_logger.h"
 
 //####################################################################
 

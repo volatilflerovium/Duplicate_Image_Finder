@@ -1,9 +1,8 @@
-#include "picture_viewer.h"
-
-#include "data.h"
-#include "data_logger.h"
-#include "wx_stacked_image.h"
-#include "wx_constants.h"
+#include "../include/picture_viewer.h"
+#include "../include/data.h"
+#include "../include/data_logger.h"
+#include "../include/wx_stacked_image.h"
+#include "../include/wx_constants.h"
 
 //----------------------------------------------------------------------
 

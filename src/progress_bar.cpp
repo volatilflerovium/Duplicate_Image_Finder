@@ -1,4 +1,4 @@
-#include "progress_bar.h"
+#include "../include/progress_bar.h"
 #include <wx/event.h>
 //----------------------------------------------------------------------
 

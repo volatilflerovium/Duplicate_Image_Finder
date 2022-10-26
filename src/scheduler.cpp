@@ -1,7 +1,7 @@
 #include<iostream>
-#include "scheduler.h"
-#include "worker.h"
-#include "data_logger.h"
+#include "../include/scheduler.h"
+#include "../include/worker.h"
+#include "../include/data_logger.h"
 
 //####################################################################
 //####################################################################

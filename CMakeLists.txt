@@ -60,21 +60,21 @@ if(release)
 endif()
 
 set(SOURCES
-	main.cpp
-	duplicate_img_gui.cpp
-	wx_imagew.cpp
-	wx_stacked_image.cpp
-	scroller.cpp
-	opencv_utilities.cpp
-	histogram_loader.cpp
-	worker.cpp
-	scheduler.cpp
-	data_logger.cpp
-	file_manager.cpp
-	picture_viewer.cpp
-   wx_worker.cpp
-   progress_bar.cpp
-   notification_module.cpp
+	src/main.cpp
+	src/duplicate_img_gui.cpp
+	src/wx_imagew.cpp
+	src/wx_stacked_image.cpp
+	src/scroller.cpp
+	src/opencv_utilities.cpp
+	src/histogram_loader.cpp
+	src/worker.cpp
+	src/scheduler.cpp
+	src/data_logger.cpp
+	src/file_manager.cpp
+	src/picture_viewer.cpp
+   src/wx_worker.cpp
+   src/progress_bar.cpp
+   src/notification_module.cpp
 )
 
 add_executable(wxDuplicateImgFinder ${SOURCES})

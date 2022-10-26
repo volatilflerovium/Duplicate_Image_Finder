@@ -1,10 +1,10 @@
 #include <wx/dir.h>
 
-#include "duplicate_img_gui.h"
-#include "file_manager.h"
-#include "progress_bar.h"
-#include "wx_constants.h"
-#include "wx_constants.h"
+#include "../include/duplicate_img_gui.h"
+#include "../include/file_manager.h"
+#include "../include/progress_bar.h"
+#include "../include/wx_constants.h"
+#include "../include/wx_constants.h"
 
 DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 : wxFrame(NULL, -1, title, wxPoint(-1, -1)), 

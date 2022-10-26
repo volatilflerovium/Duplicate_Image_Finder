@@ -1,8 +1,7 @@
-#include "wx_stacked_image.h"
-
-#include "file_manager.h"
-#include "notification_module.h"
-#include "wx_constants.h"
+#include "../include/wx_stacked_image.h"
+#include "../include/file_manager.h"
+#include "../include/notification_module.h"
+#include "../include/wx_constants.h"
 
 //######################################################################
 //######################################################################

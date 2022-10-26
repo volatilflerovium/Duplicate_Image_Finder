@@ -1,9 +1,9 @@
 #include <wx/image.h>
 #include <iostream>
 
-#include "wx_imagew.h"
-#include "file_manager.h"
-#include "data.h"
+#include "../include/wx_imagew.h"
+#include "../include/file_manager.h"
+#include "../include/data.h"
 
 //####################################################
 

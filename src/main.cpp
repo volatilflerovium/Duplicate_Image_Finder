@@ -1,7 +1,5 @@
-#include "main.h"
-
-
-#include "wx_worker.h"
+#include "../include/main.h"
+#include "../include/wx_worker.h"
 
 IMPLEMENT_APP(MyApp)
 
