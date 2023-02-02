@@ -77,7 +77,7 @@ The GUI is built using [wxWidgets](https://www.wxwidgets.org).
 
 In the following image we see the components of the GUI:
 
-![Example](http://103.102.44.126/img/dpf0.png)
+![Example](https://i.postimg.cc/JnfNHG2j/dpf0.png)
 
 - Add directories that contain pictures using the Directory field or the Browser button. The list of the directores
 where to search for duplicates will be listed in the Directories area,
@@ -97,10 +97,10 @@ where to search for duplicates will be listed in the Directories area,
 Thumbnails of the similar images are grouped at the left of the main area. In the following
 image we see three groups of smilar images:
 
-![Example](http://103.102.44.126/img/dpf1.png)
+![Example](https://i.postimg.cc/sx32LzBt/dpf1.png)
 
 Second image of the second group:
 
-![Example](http://103.102.44.126/img/dpf2.png)
+![Example](https://i.postimg.cc/PqZrrJYg/dpf2.png)
 
 Pretty good for the humble histogram!
