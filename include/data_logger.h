@@ -1,28 +1,30 @@
 /*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*  
 * Logger class                                                       *
 * DataLogger class                               				         *
 * Printer class                                  				         *
 *                                                                    *
-* Date:    17-05-2021                                                *
+* Date:    17-05-2021  (Reviewed 03/2025)                            *
 * Author:  Dan Machado                                               *                                         *
 **********************************************************************/
 #ifndef DATA_LOGGER_H
 #define DATA_LOGGER_H
 
+#include "file_manager.h"
+
 #include <mutex>
 #include <iostream>
 #include <fstream>
-#include <fstream>
-#include <cstring>
 #include <string>
-#include <sys/stat.h>
 
-
-//#include <filesystem>
-//#define NDEBUG
 #include <cassert>
-
-#include "file_manager.h"
 
 //####################################################################
 

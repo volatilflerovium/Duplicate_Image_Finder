@@ -7,9 +7,7 @@ class MyApp : public wxApp
 	DuplicateImgGUI* m_simple;
   public:
 		virtual bool OnInit();
-		~MyApp(){
-			//wxDELETE(m_simple);
-		}
+		virtual ~MyApp()=default;
 		
 		void OnClose(wxCloseEvent &event);
 };

@@ -1,26 +1,29 @@
 /*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
 * HistogramLoader class                           				         *
 *                                                                    *
 * Version: 1.0                                                       *
-* Date:    29-05-2021                                                *
+* Date:    29-05-2021  (Reviewed 03/2025)                            *
 * Author:  Dan Machado                                               *                                         *
 **********************************************************************/
-
 #ifndef HISTOGRAMLOADER_H
 #define HISTOGRAMLOADER_H
+#include "data.h"
+#include "settings_manager.h"
 
 #include <vector>
 #include <string>
 #include <fstream>
-#include <sstream>
 #include <thread>
-#include <ctime>
-#include <unistd.h>
 
-#include "data_logger.h"
-#include "data.h"
-
-//####################################################################
+//====================================================================
 
 class HistogramLoader
 {
@@ -40,9 +43,10 @@ class HistogramLoader
 			}
 		}
 		
-		static void saveCurrentState(){
-			Printer::logData("chunkL: ",m_chunkNumberL);
-			Printer::logData("chunkR: ",m_chunkNumberR);
+		static void saveCurrentState()
+		{
+			SettingsManager::getSettingManager().setChunkL(m_chunkNumberL);
+			SettingsManager::getSettingManager().setChunkR(m_chunkNumberR);
 		}
 
 	private:

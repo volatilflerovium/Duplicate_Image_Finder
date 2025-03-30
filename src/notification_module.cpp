@@ -1,11 +1,26 @@
-#include "../include/notification_module.h"
-#include "../include/wx_constants.h"
+/*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
+* NotifyLabel class                                       			   *
+*                                                                    *
+* Version: 1.0                                                       *
+* Date:    24-06-2021   (Reviewed 03/2025)                           *
+* Author:  Dan Machado                                               *
+**********************************************************************/
+#include "notification_module.h"
+#include "wx_constants.h"
 
 NotificationModule* NotificationModule::m_instance(nullptr);
 
 //----------------------------------------------------------------------
 
-NotificationModule::NotificationModule(wxPanel* parent)
+NotificationModule::NotificationModule(wxWindow* parent)
 : wxPanel(parent)
 {
 	SetMinSize(wxSize(WX::MIN_WIDTH, 30));
@@ -44,7 +59,7 @@ NotificationModule::~NotificationModule(){
 
 //----------------------------------------------------------------------
 
-NotificationModule* NotificationModule::init(wxPanel* parent){
+NotificationModule* NotificationModule::init(wxWindow* parent){
 	if(!m_instance){
 		m_instance=new NotificationModule(parent);
 	}

@@ -1,17 +1,25 @@
 /*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
 * DIMGS namespace                                				         *
 * Data struct                                                        *
 *                                                                    *
 * Version: 1.0                                                       *
-* Date:    29-05-2021                                                *
-* Author:  Dan Machado                                               *                                         *
+* Date:    29-05-2021  (Reviewed 03-2025)                            *
+* Author:  Dan Machado                                               *
 **********************************************************************/
-
 #ifndef DATA_H
 #define DATA_H
-#include <vector>
-#include <string>
-#include "opencv_utilities.h"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+
+//======================================================================
 
 namespace DIMGS
 {
@@ -66,15 +74,7 @@ struct DataBuffer
 	}
 };
 
-//======================================================================
 
-enum class SUBDIR
-{
-	IS_NEW=0,
-	IS_SUB,
-	IS_SUP,
-	
-};
 
 //======================================================================
 

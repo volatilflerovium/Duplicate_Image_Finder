@@ -1,6 +1,22 @@
-#include <iostream>
-#include "../include/histogram_loader.h"
-#include "../include/data_logger.h"
+/*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
+* HistogramLoader class                           				         *
+*                                                                    *
+* Version: 1.0                                                       *
+* Date:    29-05-2021  (Reviewed 03/2025)                            *
+* Author:  Dan Machado                                               *                                         *
+**********************************************************************/
+#include "histogram_loader.h"
+#include "data_logger.h"
+#include "opencv_utilities.h"
+#include "data_logger.h"
 
 //####################################################################
 
@@ -27,15 +43,14 @@ void HistogramLoader::init(
 
 //--------------------------------------------------------------------
 
-Data* HistogramLoader::loadHistgrams(){
+Data* HistogramLoader::loadHistgrams()
+{
 	if(m_chunkNumberL<0){
 		return nullptr;
 	}	
-	bool a=false;
 	
 	if(!loadHistgrams(m_data.m_histogramsR, m_data.m_picsR, m_chunkNumberR)){
 		m_chunkNumberR=0;
-		a=true;
 	}
 	m_data.m_sentinelR=m_position;
 
@@ -72,7 +87,7 @@ bool HistogramLoader::loadHistgrams(
 	std::ifstream file;
 	file.open(m_picList);
 	if(!file.is_open()){
-		Logger::log("File failed to open");
+		Logger::log("Failed to open pictures list file.");
 		return false;
 	}
 	
@@ -82,10 +97,12 @@ bool HistogramLoader::loadHistgrams(
 	std::string line, file_name;		
 	while(getline(file, line) && m_position<m_limit){
 		lineNumber++;
-
+		//Logger::log("Lines: ", lineNumber, " chunkN: ", chunkNumber);
 		if(lineNumber<chunkNumber*m_limit || line.length()==0){
 			continue;
 		}
+		//Logger::log("Lines: ", lineNumber, " chunkN: ", chunkNumber, "===");
+		
 		valid=true;
 		pics[m_position]=line;
 

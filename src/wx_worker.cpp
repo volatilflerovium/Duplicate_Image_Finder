@@ -1,57 +1,78 @@
-#include "../include/opencv_utilities.h"
-#include "../include/histogram_loader.h"
-#include "../include/scheduler.h"
-#include "../include/data_logger.h"
-#include "../include/file_manager.h"
-#include "../include/wx_worker.h"
+/*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
+* WxWorker class                                   				      *
+*                                                                    *
+* Version: 1.0                                                       *
+* Date:    22-06-2021  (Reviewed 03/2025)                            *
+* Author:  Dan Machado                                               *
+**********************************************************************/
+#include "wx_worker.h"
+#include "opencv_utilities.h"
+#include "data.h"
+#include "data_logger.h"
+#include "file_manager.h"
+#include "settings_manager.h"
+
+#include "data_visualization.h"
+
+extern DataView* s_dataViewPtr;
 
 //----------------------------------------------------------------------
 
 WxWorker::WxWorker(wxFrame* parent)
-:m_parent(parent),
-m_fileList(nullptr), 
-	m_running(true), m_ready(false), m_stopJob(false),
-	m_jobCompleted(false), m_cancelled(false), m_skipHist(false)
+:wxThread(wxTHREAD_DETACHED)
+, m_parent(parent)
+, m_running(true)
+, m_ready(false)
+, m_stopJob(false)
+, m_jobCompleted(false)
+, m_cancelled(false)
+, m_skipHist(false)
 {
 	m_ulock=std::unique_lock<std::mutex>(m_mtx);
 
 	HistogramLoader::init(FileManager::c_DIR_HIST, FileManager::c_FILE_LIST);
 
-	FileManager::loadSettings();
-	if(FileManager::get("resume")!=1){
+	auto settings=SettingsManager::getSettingManager();
+
+	if(settings.getResume()!=1){
 		FileManager::cleanUp();
 	}
 	else{
-		HistogramLoader::setChunks(std::abs(FileManager::get("chunkL")), std::abs(FileManager::get("chunkR")));
+		HistogramLoader::setChunks(std::abs(settings.getChunkL()), std::abs(settings.getChunkR()));
 	}
-	
-	Printer::init(FileManager::c_SAVE_SETTING);
 
-	int num_cpus = std::thread::hardware_concurrency();
-
-	Printer::logData("Total cpus available: ", num_cpus);
+	int num_cpus =3*std::thread::hardware_concurrency();
 
 	Scheduler::init(num_cpus);
 }
 
 //----------------------------------------------------------------------
 
-wxThread::ExitCode WxWorker::Entry(){
+wxThread::ExitCode WxWorker::Entry()
+{
 	while(m_running){
 		m_ready=false;
-		
 		m_cv.wait(m_ulock, [this]{return this->m_ready;});
-		
-		if(m_fileList){
+		m_ready=false;
+		if(FileManager::totalFiles()>0 && m_running){
 			if(mkHist()){
-				m_ready=false;
 				m_cv.wait(m_ulock, [this]{return this->m_ready;});
-
-				if(!m_cancelled){
+				if(!m_cancelled && m_running){
 					doWork();
 				}
 			}
-
+			
+			if(!m_running){
+				break;
+			}
 			if(m_cancelled){
 				sendEventStatus(WorkCancelled);
 				Scheduler::unpause();
@@ -61,7 +82,6 @@ wxThread::ExitCode WxWorker::Entry(){
 				sendEventStatus(SearchFinish);
 			}
 		}
-		m_skipHist=false;
 	}
 
 	return 0;
@@ -69,24 +89,25 @@ wxThread::ExitCode WxWorker::Entry(){
 
 //----------------------------------------------------------------------
 
-bool WxWorker::mkHist(){
+bool WxWorker::mkHist()
+{
 	static int lineNumb=1;
 
 	if(m_skipHist){
-		sendEventData(c_histFinish, lineNumb-1);
+		sendHistogramStatus(lineNumb-1);
 		return true;
 	}
-	
-	std::ofstream fileList(FileManager::c_FILE_LIST, std::ios::trunc);
+	std::ios_base::openmode mode=std::ios::trunc;
 
-	/*use this when std::ofstream fileList(FileManager::c_FILE_LIST)
-	 * fileList<<"w";
-	fileList.seekp(0);//*/
+	std::ofstream fileList(FileManager::c_FILE_LIST, mode);
 
 	lineNumb=1;
-	for(const std::string& imageName : (*m_fileList)) {
+	
+	FileManager::loopFilesMap([&](const std::string& imageName, uint& val){
+		val=0;
+
 		if(m_stopJob){
-			break;
+			return false;
 		}
 
 		try
@@ -95,7 +116,7 @@ bool WxWorker::mkHist(){
 
 			for(int k=0; k<DIMGS::DATA_SIZE; k++){
 				if(m_stopJob){
-					break;
+					return false;
 				}
 				std::string file_name=FileManager::c_DIR_HIST+std::string("img")+std::to_string(lineNumb)+std::string("_")+std::to_string(k)+std::string(".yml");
 				cv::FileStorage storage(file_name, cv::FileStorage::WRITE);
@@ -109,70 +130,81 @@ bool WxWorker::mkHist(){
 			Logger::log(imageName);
 		}
 		sendEventProgress();
-	}
+		return true;
+	});
 
 	fileList.close();
 
+	m_skipHist=!m_stopJob;
 	if(!m_stopJob){
-		sendEventData(c_histFinish, lineNumb-1);
-		m_fileList=nullptr;
-		return true;
+		sendHistogramStatus(lineNumb-1);
 	}
-	return false;
+	else{
+		sendHistogramStatus(-1);
+	}
+	return m_skipHist;
 }
 
 //----------------------------------------------------------------------
 
-void WxWorker::doWork(){
+void WxWorker::doWork()
+{
+	s_dataViewPtr->reset();
 	bool newBlock=false;
 	std::string* pic=nullptr;
 	int rank=0;
 	Data* data=nullptr;
-
 	while(1){ 
-		if(Scheduler::stopProcessing()){
+		if(Scheduler::isProcessing()){
 			m_jobCompleted=false;
 			break;
 		}
-
 		data=HistogramLoader::loadHistgrams();			
 		if(!data){
 			break;
 		} 
-
 		Scheduler::feedData(data);
 		Scheduler::wait();
 		while(Scheduler::getData(pic, newBlock, rank)){
-			sendEventPicture(pic, newBlock, rank);	
+			s_dataViewPtr->updateData(pic->c_str(), newBlock);
+			sendEventPicture(pic, newBlock, rank);
+			
 		}
 		sendEventProgress();
 	}
-
 	Scheduler::unpause();
 }
 
 
 //----------------------------------------------------------------------
 
-void WxWorker::sendEventProgress(){
-	wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, EVNT_PROGRESS_BAR_ID);
-	event.SetInt(1);
+void WxWorker::sendEventProgress()
+{
+	wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, EVNT_PROGRESS_BAR);
 	m_parent->GetEventHandler()->AddPendingEvent(event);
 }
 
 //----------------------------------------------------------------------
 
-void WxWorker::sendEventData(const wxString& data, int val){
+void WxWorker::sendHistogramStatus(int val)
+{
 	wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, EVNT_DATA_ID);
 	event.SetInt(val);
-	event.SetString(data);
+	if(val==-1){
+		event.SetString(c_histCancelled);
+	}
+	else{
+		event.SetString(c_histFinish);
+	}
+
 	m_parent->GetEventHandler()->AddPendingEvent(event);
 	
 }
 
 //----------------------------------------------------------------------
 
-void WxWorker::sendEventStatus(int status){
+void WxWorker::sendEventStatus(int status)
+{
 	wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, EVNT_STATUS_ID);
 	event.SetInt(status);
 	m_parent->GetEventHandler()->AddPendingEvent(event);
@@ -180,16 +212,16 @@ void WxWorker::sendEventStatus(int status){
 
 //----------------------------------------------------------------------
 
-void WxWorker::sendEventPicture(std::string* pic, bool newBlock, int rank){
+void WxWorker::sendEventPicture(std::string* pic, bool newBlock, int rank)
+{
 	wxCommandEvent event(wxEVT_COMMAND_TEXT_UPDATED, EVNT_ADD_PICTURE_ID);
 	if(newBlock){
 		rank*=-1;
 	}
 
 	event.SetInt(rank);
-	event.SetString(wxString(*pic));
+	event.SetString(pic->c_str());
 	m_parent->GetEventHandler()->AddPendingEvent(event);
 }
 
 //----------------------------------------------------------------------
-

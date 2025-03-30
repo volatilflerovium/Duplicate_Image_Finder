@@ -1,8 +1,20 @@
+/*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
+* Version: 1.0                                                       *
+* Date:    29-05-2021   (Reviewed 03/2025)                           *
+* Author:  Dan Machado                                               *                                         *
+**********************************************************************/
 #ifndef WX_CONSTANTS_H
 #define WX_CONSTANTS_H
-#include <wx/wx.h>
-#include <wx/settings.h>
 
+//====================================================================
 
 namespace WX{
 	enum 
@@ -13,11 +25,12 @@ namespace WX{
 		ADD_PIC,
 		CLEAR,
 		START,
-		CANCEL,
+		START_FROM_POPUP,
 		DELETE_IMG,
 		OPEN_IMG,
-		SLIDER_ID,
+		SENSITIVITY_MODE,
 		RESET,
+		REMOVE_DIR,
 	};
 
 	const int MIN_WIDTH=800;
@@ -28,8 +41,5 @@ const int c_windowPadding=10;
 const int c_picPadding=5;
 const int c_scrollerWidth=130;
 const int c_scrollerMinHeight=300;
-
-
-const wxString c_separatorColour("#678fff");
 
 #endif

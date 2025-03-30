@@ -1,13 +1,32 @@
-#include <cstdio>
-#include <filesystem>
-#include <algorithm>
+/*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
+* FileManager class                                  				      *
+*                                                                    *
+* Version: 1.0                                                       *
+* Date:    22-06-2021  (Reviewed 03/2025)                            *
+* Author:  Dan Machado                                               *
+**********************************************************************/
+#include "file_manager.h"
+#include "data_logger.h"
+#include "settings_manager.h"
 
-#include <unistd.h>
-#include <sys/types.h>
+#include <algorithm>
+#include <fstream>
+#include <cstring>
+
 #include <pwd.h>
 
-#include "../include/file_manager.h"
-#include "../include/data_logger.h"
+#include "utilities/debug_utils.h"
+#include "utilities/profiler.h"
+
+//====================================================================
 
 const std::string FileManager::c_APPLICATION_DIR(FileManager::mkPath("applicationDir"));
 const std::string FileManager::c_IMG_BACKGROUND(FileManager::mkPath("imgBackground"));
@@ -15,20 +34,107 @@ const std::string FileManager::c_DIR_HIST(FileManager::mkPath("hist"));
 const std::string FileManager::c_SAVE_SETTING(FileManager::mkPath("settings"));
 const std::string FileManager::c_FILE_LIST(FileManager::mkPath("list"));
 bool FileManager::m_saveSession(false);
-std::map<wxString, wxBitmapType> FileManager::m_filter;
-std::map<wxString, bool> FileManager::m_wxSupported;
-std::map<FileManager::CnstChar, int> FileManager::m_settings;
+
+std::map<std::string, uint> FileManager::m_fileMap;
+
+std::map<wxString, bool> FileManager::m_opencvSupported
+{
+	{"jpeg", true},
+	{"JPEG", true},
+	{"jpg", true},
+	{"JPG", true},
+	{"jpe", true},
+	{"JPE", true},
+	{"png", true},
+	{"PNG", true},
+	{"webp", false},
+	{"WEBP", false},
+	{"bmp", true},
+	{"BMP", true},
+	{"tiff", true},
+	{"TIFF", true},
+	{"tif", false},
+	{"TIF", false},
+	{"jp2", false},
+	{"JP2", false},
+	{"pic", false},
+	{"PIC", false},
+	{"ppm", false},
+	{"PPM", false},
+	{"pxm", false},
+	{"PXM", false},
+	{"pnm", true},
+	{"PNM", true},
+	{"pfm", false},
+	{"PFM", false},
+	{"sr", false},
+	{"SR", false},
+	{"ras", false},
+	{"RAS", false},
+	{"exr", false},
+	{"EXR", false},
+	{"hdr", false},
+	{"HDR", false},
+	{"pbm", false},
+	{"PBM", false},
+	{"pgm", false},
+	{"PGM", false},
+	{"dip", false},
+	{"DIP", false},
+	{".jpeg", true},
+	{".JPEG", true},
+	{".jpg", true},
+	{".JPG", true},
+	{".jpe", true},
+	{".JPE", true},
+	{".png", true},
+	{".PNG", true},
+	{".webp", false},
+	{".WEBP", false},
+	{".bmp", true},
+	{".BMP", true},
+	{".tiff", true},
+	{".TIFF", true},
+	{".tif", false},
+	{".TIF", false},
+	{".jp2", false},
+	{".JP2", false},
+	{".pic", false},
+	{".PIC", false},
+	{".ppm", false},
+	{".PPM", false},
+	{".pxm", false},
+	{".PXM", false},
+	{".pnm", true},
+	{".PNM", true},
+	{".pfm", false},
+	{".PFM", false},
+	{".sr", false},
+	{".SR", false},
+	{".ras", false},
+	{".RAS", false},
+	{".exr", false},
+	{".EXR", false},
+	{".hdr", false},
+	{".HDR", false},
+	{".pbm", false},
+	{".PBM", false},
+	{".pgm", false},
+	{".PGM", false},
+	{".dip", false},
+	{".DIP", false}
+};
 
 //----------------------------------------------------------------------
 
-std::string FileManager::mkPath(const char* file){
+std::string FileManager::mkPath(const char* file)
+{
 	std::string homeDir(getenv("HOME"));
 
-	if(homeDir == std::string("") || !fileExists(homeDir)) 
-	{
+	if(homeDir == std::string("") || !fileExists(homeDir.c_str())) {
 		homeDir = std::string(getpwuid(getuid())->pw_dir);
 	
-		if(!fileExists(homeDir)){
+		if(!fileExists(homeDir.c_str())){
 			homeDir=std::string("/tmp/data");
 		}
 	}
@@ -54,7 +160,6 @@ std::string FileManager::mkPath(const char* file){
 		path.append("settings");
 		return path;
 	}
-	
 
 	if(std::strlen(file)==13 && std::memcmp(file, "imgBackground", 13)==0){
 		path.append("imgBackground.png");
@@ -68,27 +173,36 @@ std::string FileManager::mkPath(const char* file){
 
 //----------------------------------------------------------------------
 
-void FileManager::cleanUp(bool clearAll){
-	if(fileExists(c_DIR_HIST)){
+void FileManager::cleanUp(bool clearAll)
+{
+	if(fileExists(c_DIR_HIST.c_str())){
 		remove_all(std::filesystem::path{c_DIR_HIST.c_str()});
 		std::filesystem::create_directory(std::filesystem::path{c_DIR_HIST.c_str()});
 	}
 	
-	if(fileExists(c_FILE_LIST)){
+	if(fileExists(c_FILE_LIST.c_str())){
 		remove(std::filesystem::path{c_FILE_LIST.c_str()});
-	}
-
-	if(clearAll){
-		if(fileExists(c_SAVE_SETTING)){
-			remove(std::filesystem::path{c_SAVE_SETTING.c_str()});
-		}
 	}
 }
 
 //----------------------------------------------------------------------
 
-bool FileManager::fileExists(const std::string& filePath){
-	
+bool FileManager::deleteFile(const char* filePath)
+{
+	std::string cmd="gio trash \"";
+	cmd.append(filePath);
+	cmd.append("\"");
+	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+	if (!pipe) {
+		return false;
+	}
+	return true;
+}
+
+//----------------------------------------------------------------------
+
+bool FileManager::fileExists(const char* filePath)
+{	
 	std::ifstream file;
 	file.open(filePath);
 	if(!file.is_open()){
@@ -100,188 +214,33 @@ bool FileManager::fileExists(const std::string& filePath){
 
 //----------------------------------------------------------------------
 	
-void FileManager::init(){
-	m_filter.emplace("jpeg", wxBITMAP_TYPE_JPEG);
-	m_filter.emplace("JPEG", wxBITMAP_TYPE_JPEG);
-	m_filter.emplace("jpg", wxBITMAP_TYPE_JPEG);
-	m_filter.emplace("JPG", wxBITMAP_TYPE_JPEG);
-	m_filter.emplace("jpe", wxBITMAP_TYPE_JPEG);
-	m_filter.emplace("JPE", wxBITMAP_TYPE_JPEG);
-	m_filter.emplace("png", wxBITMAP_TYPE_PNG);
-	m_filter.emplace("PNG", wxBITMAP_TYPE_PNG);
-	m_filter.emplace("webp", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("WEBP", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("bmp", wxBITMAP_TYPE_BMP);
-	m_filter.emplace("BMP", wxBITMAP_TYPE_BMP);
-	m_filter.emplace("tiff", wxBITMAP_TYPE_TIFF);
-	m_filter.emplace("TIFF", wxBITMAP_TYPE_TIFF);
-	m_filter.emplace("tif", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("TIF", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("jp2", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("JP2", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("pic", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("PIC", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("ppm", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("PPM", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("pxm", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("PXM", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("pnm", wxBITMAP_TYPE_PNM);
-	m_filter.emplace("PNM", wxBITMAP_TYPE_PNM);
-	m_filter.emplace("pfm", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("PFM", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("sr", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("SR", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("ras", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("RAS", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("exr", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("EXR", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("hdr", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("HDR", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("pbm", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("PBM", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("pgm", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("PGM", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("dib", wxBITMAP_TYPE_ANY);
-	m_filter.emplace("DIP", wxBITMAP_TYPE_ANY);
-
-	//initilise m_wxSupported
-	m_wxSupported.emplace("jpeg", true);
-	m_wxSupported.emplace("JPEG", true);
-	m_wxSupported.emplace("jpg", true);
-	m_wxSupported.emplace("JPG", true);
-	m_wxSupported.emplace("jpe", true);
-	m_wxSupported.emplace("JPE", true);
-	m_wxSupported.emplace("png", true);
-	m_wxSupported.emplace("PNG", true);
-	m_wxSupported.emplace("webp", false);
-	m_wxSupported.emplace("WEBP", false);
-	m_wxSupported.emplace("bmp", true);
-	m_wxSupported.emplace("BMP", true);
-	m_wxSupported.emplace("tiff", true);
-	m_wxSupported.emplace("TIFF", true);
-	m_wxSupported.emplace("tif", false);
-	m_wxSupported.emplace("TIF", false);
-	m_wxSupported.emplace("jp2", false);
-	m_wxSupported.emplace("JP2", false);
-	m_wxSupported.emplace("pic", false);
-	m_wxSupported.emplace("PIC", false);
-	m_wxSupported.emplace("ppm", false);
-	m_wxSupported.emplace("PPM", false);
-	m_wxSupported.emplace("pxm", false);
-	m_wxSupported.emplace("PXM", false);
-	m_wxSupported.emplace("pnm", true);
-	m_wxSupported.emplace("PNM", true);
-	m_wxSupported.emplace("pfm", false);
-	m_wxSupported.emplace("PFM", false);
-	m_wxSupported.emplace("sr", false);
-	m_wxSupported.emplace("SR", false);
-	m_wxSupported.emplace("ras", false);
-	m_wxSupported.emplace("RAS", false);
-	m_wxSupported.emplace("exr", false);
-	m_wxSupported.emplace("EXR", false);
-	m_wxSupported.emplace("hdr", false);
-	m_wxSupported.emplace("HDR", false);
-	m_wxSupported.emplace("pbm", false);
-	m_wxSupported.emplace("PBM", false);
-	m_wxSupported.emplace("pgm", false);
-	m_wxSupported.emplace("PGM", false);
-	m_wxSupported.emplace("dib", false);
-	m_wxSupported.emplace("DIP", false);
-
-	//In Linux everything is a file :-)
-
-	if(!fileExists(c_APPLICATION_DIR)){
+void FileManager::init()
+{
+	if(!fileExists(c_APPLICATION_DIR.c_str())){
 		setPath(c_APPLICATION_DIR.c_str());
 	}
 
-	if(!fileExists(c_DIR_HIST)){
+	if(!fileExists(c_DIR_HIST.c_str())){
 		setPath(c_DIR_HIST.c_str());
 	}
-	
-	m_settings["chunkL"]=-1;
-	m_settings["chunkR"]=-1;
-	m_settings["resume"]=-1;
+
 }
 
 //----------------------------------------------------------------------
 
-wxBitmapType FileManager::getBitmapType(const wxString& wxStr){
-	if(isSuported(wxStr)){
-		std::size_t n=wxStr.find_last_of('.');
-		return m_filter[wxStr.substr(n+1)];
-	}
-	return wxBITMAP_TYPE_ANY;
-}
-
-//----------------------------------------------------------------------
-
-bool FileManager::isSuported(const wxString& wxStr){
-	std::size_t n=wxStr.find_last_of('.');
-	if(n!= std::string::npos){
-		return m_filter.find(wxStr.substr(n+1))!=m_filter.end();
+bool FileManager::isFileSuported(const char* extension)
+{
+	auto const& support=m_opencvSupported.find(extension);
+	if(support!=m_opencvSupported.end()){
+		return true;
 	}
 	return false;
 }
 
 //----------------------------------------------------------------------
 
-bool FileManager::isWXsuported(const wxString& wxStr){
-	std::size_t n=wxStr.find_last_of('.');
-	if(n!= std::string::npos){
-		std::map<wxString, bool>::iterator it=m_wxSupported.find(wxStr.substr(n+1));
-		if(it!=m_wxSupported.end()){
-			return it->second;
-		}
-	}
-	return false;
-}
-
-//----------------------------------------------------------------------
-
-bool FileManager::loadSettings(){
-	std::ifstream file;
-	file.open(c_SAVE_SETTING);
-	if(!file.is_open()){
-		return false;
-	}
-
-	std::size_t pos=std::string::npos;
-	std::string line, setting, val;
-	int n;
-	std::map<FileManager::CnstChar, int>::iterator it;
-	while(getline(file, line)){
-		pos=line.find_last_of(c_separator);
-		if(pos!=std::string::npos && pos>0){
-			setting=line.substr(0, pos);
-			
-			it=m_settings.find(CnstChar(setting.c_str()));
-			if(it==m_settings.end()){
-				continue;
-			}
-			
-			val=trim(line.substr(pos+1));
-			try
-			{
-				n=std::stoi(val);
-			}
-			catch(...){
-				n=0;
-			}
-			m_settings[setting.c_str()]=n; 
-		}
-	}
-	file.close();
-
-	if(m_settings["chunkL"]>0 && m_settings["chunkR"]>0){
-		m_settings["resume"]=1;
-	}
-	
-	return true;
-}
-
-//----------------------------------------------------------------------
-
-std::string FileManager::trim(const std::string& str){
+std::string FileManager::trim(const std::string& str)
+{
 	size_t first = str.find_first_not_of(' ');
 	if(std::string::npos == first){
 		return str;
@@ -292,17 +251,8 @@ std::string FileManager::trim(const std::string& str){
 
 //----------------------------------------------------------------------
 
-int FileManager::get(const char* setting){
-	std::map<CnstChar, int>::iterator it=m_settings.find(CnstChar(setting));
-	if(it!=m_settings.end()){
-		return it->second;
-	}
-	return -1;
-}
-
-//----------------------------------------------------------------------
-
-std::string FileManager::setPath(const char* filePath) {
+std::string FileManager::setPath(const char* filePath)
+{
 	char buffer[254];
 	int t=strlen(filePath);
 	std::memcpy(buffer, filePath, t*sizeof(char));
@@ -322,8 +272,60 @@ std::string FileManager::setPath(const char* filePath) {
 
 //----------------------------------------------------------------------
 
-SUBDIR FileManager::isSubdirectory(const std::string& dirTest, std::vector<std::string>& directories){
-	bool a=false;
+std::string FileManager::dataVisualizationJson()
+{
+	std::string filePath="/tmp";
+	filePath.append("/.DuplicatedImgNetworkData.js");
+	return filePath;
+}
+
+//----------------------------------------------------------------------
+
+std::string FileManager::dataVisualizationURL()
+{
+	std::string filePath="file:";
+	 
+	#ifdef DEBUG
+	filePath.append(DEBUG_DIR); // define in CMakeLists
+	#else
+	if(getenv("APPDIR")){
+		filePath.append(getenv("APPDIR"));
+		filePath.append("/usr/share");
+	}
+	else{
+		filePath.append("/tmp/usr/share");
+	}
+	#endif
+	filePath.append("/data_visualization/Vis_Network.html");
+
+	return filePath;
+}
+
+//----------------------------------------------------------------------
+
+std::string FileManager::iconsPath()
+{
+	std::string filePath="";
+	#ifdef DEBUG
+		filePath=DEBUG_DIR; // define in CMakeLists
+	#else
+		if(getenv("APPDIR")){
+			filePath=getenv("APPDIR");
+		}
+		else{
+			filePath="/tmp/";
+		}
+		filePath.append("/usr/share");
+	#endif
+	
+	filePath.append("/icons/");
+	return filePath;
+}
+
+//----------------------------------------------------------------------
+
+SUBDIR FileManager::isSubdirectory(const std::string& dirTest, std::vector<std::string>& directories)
+{
 	for(std::string& directory : directories){
 		if(directory.find(dirTest)==0){
 			if(directory.find_last_of("/")==dirTest.length()){
@@ -342,39 +344,8 @@ SUBDIR FileManager::isSubdirectory(const std::string& dirTest, std::vector<std::
 
 //----------------------------------------------------------------------
 
-void FileManager::removeDuplicates(std::vector<std::string>& data){
-	sort(data.begin(), data.end());
-
-	int k=0;
-	int i=0;
-	int n=data.size();
-	while(i<n){
-		k=i+1;
-		if(k==n){
-			break;
-		}
-		
-		while(k<n && data[k]==data[i]){
-			data[k++]="";
-		}
-
-		i=k;
-	}
-
-	sort(data.begin(), data.end(), [](const std::string& str1, const std::string& str2){
-		return str1>str2;
-	});
-	
-	for(int j=n-1; j>-1; j--){
-		if(data[j]==""){
-			data.pop_back();
-		}
-	}
-}
-
-//----------------------------------------------------------------------
-
-SUBDIR FileManager::reduce(const std::string& dirTest, std::vector<std::string>& directories){
+SUBDIR FileManager::reduce(const std::string& dirTest, std::vector<std::string>& directories)
+{
 	bool a=false;
 	for(std::string& directory : directories){
 		if(directory==dirTest){
@@ -394,11 +365,34 @@ SUBDIR FileManager::reduce(const std::string& dirTest, std::vector<std::string>&
 	}
 
 	if(a){
-		removeDuplicates(directories);
+		std::sort(directories.begin(), directories.end()); 
+		auto last = std::unique(directories.begin(), directories.end());
+		directories.erase(last, directories.end());
+		
 		return SUBDIR::IS_SUP;
 	}
 
 	return SUBDIR::IS_NEW;
+}
+
+//----------------------------------------------------------------------
+
+int FileManager::crawler(const char* directoryPath)//, std::map<std::string, uint>& files)
+{
+	std::error_code ec;
+	int count=0;
+	std::filesystem::current_path(directoryPath, ec);
+	for(auto const& dirEntry : std::filesystem::recursive_directory_iterator(directoryPath, ec)){
+		if(dirEntry.is_regular_file()){
+			if(FileManager::isFileSuported(dirEntry.path().extension().c_str())){
+				if(m_fileMap.end()==m_fileMap.find(dirEntry.path().c_str())){
+					m_fileMap.emplace(dirEntry.path().c_str(), 0);
+					count++;
+				}
+			}
+		}
+	}
+	return count;
 }
 
 //----------------------------------------------------------------------

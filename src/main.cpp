@@ -1,5 +1,5 @@
-#include "../include/main.h"
-#include "../include/wx_worker.h"
+#include "main.h"
+#include "wx_worker.h"
 
 IMPLEMENT_APP(MyApp)
 
@@ -10,9 +10,10 @@ bool MyApp::OnInit()
 
 	// create the thread
 	WxWorker* wxWorker = new WxWorker(m_simple);
-	wxThreadError err = wxWorker->Create();
+	//wxThreadError err = wxWorker->Create();
+	if(wxWorker->Create()!=wxTHREAD_NO_ERROR){
 	
-	if(err != wxTHREAD_NO_ERROR){
+	//if(err != wxTHREAD_NO_ERROR){
 		wxMessageBox( _("Couldn't create thread!") );
 		return false;
 	}

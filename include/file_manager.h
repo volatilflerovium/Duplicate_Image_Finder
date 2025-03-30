@@ -1,23 +1,42 @@
 /*********************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE. 
+* 
 * FileManager class                                  				      *
 *                                                                    *
 * Version: 1.0                                                       *
-* Date:    22-06-2021                                                *
+* Date:    22-06-2021  (Reviewed 03/2025)                            *
 * Author:  Dan Machado                                               *
 **********************************************************************/
-#ifndef PATH_MANAGER
-#define PATH_MANAGER
-#include <cstring>
-#include <iostream>
+#ifndef FILE_MANAGER_H
+#define FILE_MANAGER_H
+
 #include <string>
-#include <fstream>
 #include <map>
-#include <vector>
+#include <filesystem>
+#include <functional>
 
 #include <wx/string.h>
 #include <wx/image.h>
 
-#include "data.h"
+//====================================================================
+
+typedef std::function<bool(const std::string&, uint&)> CBK;
+
+enum class SUBDIR
+{
+	IS_NEW=0,
+	IS_SUB,
+	IS_SUP,
+	
+};
+
+//======================================================================
 
 class FileManager
 {
@@ -30,16 +49,13 @@ class FileManager
 
 		static void init();
 		static void cleanUp(bool clearAll=true);
-		static bool loadSettings();
-		static int get(const char* setting);
 		static std::string setPath(const char* filePath);
-		static bool fileExists(const std::string& filePath);
+		static bool fileExists(const char* filePath);
 		static SUBDIR isSubdirectory(const std::string& dirTest, std::vector<std::string>& directories);
-		static void removeDuplicates(std::vector<std::string>& directories);
 		static SUBDIR reduce(const std::string& dirTest, std::vector<std::string>& directories);
-		static bool isSuported(const wxString& wxStr);
-		static bool isWXsuported(const wxString& wxStr);
-		static wxBitmapType getBitmapType(const wxString& wxStr);
+
+		static bool isFileSuported(const char* extension);
+
 		static void saveSession(bool save){
 			m_saveSession=save;
 		}
@@ -48,41 +64,101 @@ class FileManager
 			return m_saveSession;
 		}
 		
-		struct CnstChar
-		{
-			const char* m_cstr;
-			CnstChar(const char* data)
-			:m_cstr(std::move(data))
-			{}
-		};
+		static std::string iconsPath();
 
+		static bool existPath(const char* fileName);
+		static bool deleteFile(const char* filePath);
+		static std::string dataVisualizationURL();
+		static std::string dataVisualizationJson();
+		
+		static int crawler(const char* directoryPath);
 
-	private:	
+		static size_t totalFiles();
+		static void clearFilesMap();
+		static void resetFilesMap();
+		static void loopFilesMap(CBK cbk);
+		static uint findKey(const std::string& file, uint id);
+		static uint findKey(const std::string& file);
+
+	private:
+		static std::map<std::string, uint> m_fileMap;
+
+		static std::map<wxString, bool> m_opencvSupported;
 		static constexpr const char* c_separator=":"; 
-		static std::map<CnstChar, int> m_settings;
-		static std::string trim(const std::string& str);
 		static bool m_saveSession;
+
+		static std::string trim(const std::string& str);
 		static std::string mkPath(const char* file);
-		static std::map<wxString, wxBitmapType> m_filter;
-		static std::map<wxString, bool> m_wxSupported;
 };
 
 //----------------------------------------------------------------------
 
-inline bool operator<(const FileManager::CnstChar& data, const FileManager::CnstChar& other){
-	return std::strcmp(data.m_cstr, other.m_cstr)<0;
+inline size_t FileManager::totalFiles()
+{
+	return m_fileMap.size();
 }
 
 //----------------------------------------------------------------------
 
-inline bool operator>(const FileManager::CnstChar& data, const FileManager::CnstChar& other){
-	return std::strcmp(data.m_cstr, other.m_cstr)>0;
+inline void FileManager::clearFilesMap()
+{
+	return m_fileMap.clear();
 }
 
 //----------------------------------------------------------------------
 
-inline bool operator==(const FileManager::CnstChar& data, const FileManager::CnstChar& other){
-	return std::strcmp(other.m_cstr, data.m_cstr)==0;
+inline void FileManager::resetFilesMap()
+{
+	for(auto& [key, val] : m_fileMap){
+		val=0;
+	}
 }
+
+//----------------------------------------------------------------------
+
+inline void FileManager::loopFilesMap(CBK cbk)
+{
+	for(auto& [key, val] : m_fileMap){
+		if(!cbk(key, val)){
+			break;
+		}
+	}
+}
+
+
+//----------------------------------------------------------------------
+ 
+inline uint FileManager::findKey(const std::string& file)
+{
+	auto it=m_fileMap.find(file);
+	if(it!=m_fileMap.end()){
+		return it->second;
+	}
+	return 0;
+}
+
+//----------------------------------------------------------------------
+
+inline uint FileManager::findKey(const std::string& file, uint id)
+{
+	auto it=m_fileMap.find(file);
+	if(it!=m_fileMap.end()){
+		if(it->second==0){
+			it->second=id;
+		}
+		return it->second;
+	}
+	return 0;
+}
+
+//----------------------------------------------------------------------
+
+inline bool FileManager::existPath(const char* fileName)
+{
+	std::error_code ec;
+	return std::filesystem::exists(fileName, ec);
+}
+
+//----------------------------------------------------------------------
 
 #endif
