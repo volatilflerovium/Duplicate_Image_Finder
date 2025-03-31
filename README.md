@@ -1,24 +1,42 @@
-# Duplicate Image Finder
+# Duplicated Image Finder
 
-Duplicate Image Finder is a simple application written in C++ and packed
+Duplicated Image Finder is a simple application written in C++ and packed
 as [AppImage](https://appimage.org/) that can find duplicated images.
 
-# What is an AppImage?
+## Content
+- [Overview](#overview)
+- [AppImage](#appimage)
+- [Supported Files](#supported-files)
+- [The Power of the Humble Histogram](#the-power-of-the-humble-histogram)
+- [Quick Start](#quick-start)
 
-An AppImage is a downloadable file for Linux that contains an application and everything the application needs to run (e.g., libraries, icons, fonts, translations, etc.) that cannot be reasonably expected to be part of each target system.
+## Overview
 
-# How to run and install Duplicate Image Finder?
+Duplicated Image Finder finds duplicated pictures independently of rotations,
+mirroring and to certain degree resizing. However its algorithm is not perfect
+and, in this case, we take advantage of it and use a network visualization to
+present the similarity between the pictures of our collections.
+The network visualization is powered by [vis.js](https://visjs.org/)
 
-Download [Duplicate Image Finder](https://github.com/volatilflerovium/Duplicate_Image_Finder/raw/main/wxDuplicate_Image_Finder-x86_64.AppImage) and make it executable. 
-You can do this using the graphical user interface, or the terminal emulator. 
-Via a terminal run:
-```
-chmod ugo x ~/path/to/wxDuplicate_Image_Finder-x86_64.AppImage
-```
-Using the graphical interface: right-clicking on it, select Properties , 
-and then on the Permissions tab , check the box next to Allow executing file as program.
+You can see Duplicated Image Finder in action:
 
-# Supported files
+- [Example](https://odysee.com/@volatilflerovium:3/Duplicated_Picture_Finder_1:c)
+- [Settings](https://odysee.com/@volatilflerovium:3/Duplicated_Picture_Finder_Settings:5)
+
+## AppImage
+
+[Duplicated Image Finder](https://github.com/volatilflerovium/Duplicate_Image_Finder/releases)
+is available as an AppImage which means "one app = one file", which you can download and run on your
+Linux system while you don't need a package manager and nothing gets changed
+in your system.
+
+AppImages are single-file applications that run on most Linux distributions.
+Download it, make it executable, and run! No need to install.
+No system libraries or system preferences are altered.
+Most AppImages run on recent versions of Arch Linux, CentOS, Debian, Fedora,
+openSUSE, Red Hat, Ubuntu, and other common desktop distributions.
+
+## Supported Files
 As it uses OpenCV, it supports the following formats:
 
 * Windows bitmaps - *.bmp, *.dib
@@ -34,7 +52,7 @@ As it uses OpenCV, it supports the following formats:
 * Radiance HDR - *.hdr, *.pic
 * Raster and Vector geospatial data supported by GDAL
 
-# The power of the humble histogram
+## The Power of the Humble Histogram
 
 Some methods to compare two images are:
 
@@ -54,10 +72,12 @@ Some methods to compare two images are:
 		There are deep learning-based image similarity methods that we can utilize, particularly siamese networks. Siamese networks are super powerful models that can be trained with very little data to compute accurate image similarity scores.
 
 It would have been easy to implement any of these methods, after all everybody can
-copy-and-paste. Instead, Duplicate Image Finder implement a simple algorithm to find duplicated
-images which is invariant to rotations, reflexion and, to some degree, size.
+copy-and-paste. Instead, Duplicated Image Finder implements a simple algorithm
+based on comparison of histograms to rank images. This algorithm is able to
+match images that are rotated, reflection and, to some degree, resized of
+another.
 
-For each image Duplicate Image Finder calculates a set of concentric mask
+For each image Duplicated Image Finder calculates a set of concentric mask
 proportional to the image and use these to get a set of histograms.
 
 We have two basic consequences of this:
@@ -69,38 +89,19 @@ will have the same set of histograms.
 region of it. Globally, two images can have the same histogram, however
 locally they can have different histograms.
 
-# GUI
-
-The GUI is built using [wxWidgets](https://www.wxwidgets.org).
-
-# How to use it
+## Quick Start
 
 In the following image we see the components of the GUI:
 
-![Example](https://i.postimg.cc/JnfNHG2j/dpf0.png)
+[![duplicated-picture-finder.png](https://i.postimg.cc/RFMHj3WR/duplicated-picture-finder.png)](https://postimg.cc/06BjSydM)
 
-- Add directories that contain pictures using the Directory field or the Browser button. The list of the directores
-where to search for duplicates will be listed in the Directories area,
+From top-left to top-right:
 
-- Select the level of similarity,
-
-- Clear button will remove the files currently loaded in the application,
-
-- Reset button will reset the application to the initial state, i.e, ready to run it again with the same files,
-
-- Start button starts application searching for duplicates based on the selected level of similarity,
-
-- Cancel button stop the application
-
-# Results
-
-Thumbnails of the similar images are grouped at the left of the main area. In the following
-image we see three groups of smilar images:
-
-![Example](https://i.postimg.cc/sx32LzBt/dpf1.png)
-
-Second image of the second group:
-
-![Example](https://i.postimg.cc/PqZrrJYg/dpf2.png)
-
-Pretty good for the humble histogram!
+- Settings button (see video)
+- Play Animation: when the results are loaded in the network, this button will
+	start random selection of the pictures on the network
+- Restart will remove the files currently loaded in the application
+- Add Directories
+- Drop-down menu to select the level of similarity from Low, Medium and High
+- Repeat will allow you to change settings applied on the same selection of pictures after
+- Cancel button stops the application

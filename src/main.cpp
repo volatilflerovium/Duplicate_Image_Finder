@@ -5,7 +5,7 @@ IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-	m_simple = new DuplicateImgGUI(wxT("Duplicate Picture Finder"));
+	m_simple = new DuplicateImgGUI(wxT("Duplicated Image Finder"));
 	m_simple->Show(true);
 
 	// create the thread

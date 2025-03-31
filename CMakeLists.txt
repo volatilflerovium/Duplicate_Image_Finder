@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project("wxWidgets_DuplicateImg")
+project("wxDuplicatedImageFinder")
 
 # --------------------------------------------------------------------
 
@@ -72,7 +72,7 @@ target_include_directories(
 )
 #--------------------------------------------------------------------- 
 
-add_executable(wxDuplicateImgFinder
+add_executable(wxDuplicatedImageFinder
 	src/main.cpp
 	src/duplicate_img_gui.cpp
 	src/image_panel.cpp
@@ -96,13 +96,13 @@ add_executable(wxDuplicateImgFinder
 )
 
 target_include_directories(
-	wxDuplicateImgFinder
+	wxDuplicatedImageFinder
 	PRIVATE
 	"include"
 )
 
 target_link_libraries(
-	wxDuplicateImgFinder 
+	wxDuplicatedImageFinder
 	PRIVATE
 	Threads::Threads
 	"${wxWidgets_LIBRARIES}"
@@ -112,7 +112,7 @@ target_link_libraries(
 
 if("${wxWidgets_VERSION_MAJOR}.${wxWidgets_VERSION_MINOR}.${wxWidgets_VERSION_PATCH}" VERSION_LESS "3.3.0")
 	target_compile_definitions(
-		wxDuplicateImgFinder 
+		wxDuplicatedImageFinder
 		PRIVATE
 		WX_STRING_ARRAY
 	)
