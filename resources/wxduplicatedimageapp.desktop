@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=wxDuplicated Image Finder
+Exec=wxDuplicatedImageFinder
+Icon=wxduplicatedimageapp
+Categories=Graphics;

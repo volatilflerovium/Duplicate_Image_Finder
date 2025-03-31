@@ -1,9 +1,9 @@
 install(
-    FILES wxduplicateimgapp.desktop
+    FILES wxduplicatedimageapp.desktop
     DESTINATION share/applications/
 )
 
 install(
-    FILES wxduplicateimgapp.png
+    FILES wxduplicatedimageapp.png
     DESTINATION share/icons/hicolor/228x228/apps
 )
