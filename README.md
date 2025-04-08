@@ -9,6 +9,7 @@ as [AppImage](https://appimage.org/) that can find duplicated images.
 - [Supported Files](#supported-files)
 - [The Power of the Humble Histogram](#the-power-of-the-humble-histogram)
 - [Quick Start](#quick-start)
+- [Some Images](#some-images)
 
 ## Overview
 
@@ -37,6 +38,7 @@ Most AppImages run on recent versions of Arch Linux, CentOS, Debian, Fedora,
 openSUSE, Red Hat, Ubuntu, and other common desktop distributions.
 
 ## Supported Files
+
 As it uses OpenCV, it supports the following formats:
 
 * Windows bitmaps - *.bmp, *.dib
@@ -94,7 +96,7 @@ locally they can have different histograms.
 
 In the following image we see the components of the GUI:
 
-[![duplicated-picture-finder.png](https://i.postimg.cc/RFMHj3WR/duplicated-picture-finder.png)](https://postimg.cc/06BjSydM)
+[![image-network.png](https://i.postimg.cc/3W5nJ21t/image-network.png)](https://postimg.cc/YLR1dGJF)
 
 From top-left to top-right:
 
@@ -129,3 +131,13 @@ On the main area, the results are displayed in a network visualization.
 To navigate:
 - with the mouse: dragging to move and scroll wheel to zoom in/out.
 - with keyboard: arrows to move around, key + to zoom in key - to zoom out. 
+
+## Some Images
+
+[![image-network-1.png](https://i.postimg.cc/Kc1bjLxQ/image-network-1.png)](https://postimg.cc/G9nVS4Bs)
+
+[![image-network-2.png](https://i.postimg.cc/MptNtrdx/image-network-2.png)](https://postimg.cc/75GKZ9FQ)
+
+[![image-network-3.png](https://i.postimg.cc/W19Y0q11/image-network-3.png)](https://postimg.cc/yDZTHdRM)
+
+[![nice-correlation.png](https://i.postimg.cc/85vy8yB7/nice-correlation.png)](https://postimg.cc/KkZ7BDWb)
