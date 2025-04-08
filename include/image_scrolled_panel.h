@@ -23,15 +23,30 @@ class ImageScrolledPanel : public ScrolledWindowBase
 {
 	public:
 		ImageScrolledPanel(wxWindow* parent, wxWindowID id, int width);
-		virtual ~ImageScrolledPanel();
+		virtual ~ImageScrolledPanel()=default;
 		void addImage(const char* file, bool newBlock, float rank);
 		
 		virtual void clear();
-		//virtual void reduce();
 
 	private:
 		bool m_newBlock;
 };
+
+//----------------------------------------------------------------------
+
+inline ImageScrolledPanel::ImageScrolledPanel(wxWindow* parent, wxWindowID id, int width) 
+: ScrolledWindowBase(parent, width)
+, m_newBlock(false)
+{
+}
+
+//----------------------------------------------------------------------
+
+inline void ImageScrolledPanel::clear()
+{
+	ScrolledWindowBase::clear();
+	m_newBlock=false;
+}
 
 //====================================================================
 

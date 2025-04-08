@@ -19,6 +19,7 @@
 #include "image_scrolled_panel.h"
 #include "file_manager.h"
 #include "data_visualization.h"
+#include "event_definitions.h"
 
 #include "utilities/debug_utils.h"
 
@@ -40,6 +41,24 @@ PictureViewer::PictureViewer(wxWindow* parent)
 	m_scroller=new ImageScrolledPanel(this, -1, c_scrollerWidth);
 	m_scroller->SetBackgroundColour(*wxWHITE);
 	m_scroller->SetMinSize(wxSize(c_scrollerWidth, c_scrollerMinHeight));
+
+	Bind(wxEVT_CUSTOM_EVENT, [this](wxCommandEvent& event){
+		int hPosition=0;
+		m_scroller->apply([this, &event, &hPosition](wxPanel* panelPtr){
+			hPosition+=panelPtr->GetSize().GetHeight();
+			wxStackedImage* ptr=dynamic_cast<wxStackedImage*>(panelPtr);
+			
+			if(ptr){
+				if(ptr->getFileName()==event.GetString()){
+					ptr->highlight();
+					hPosition-=panelPtr->GetSize().GetHeight();
+					m_scroller->Scroll(0, hPosition/10);
+					return true;
+				}
+			}
+			return false;
+		});
+	}, EvtID::FIND_IMG);
 
 	auto dockPtr = new wxBoxSizer(wxVERTICAL);
 	dockPtr->Add(m_dataViewPtr, 1, wxALIGN_CENTER_HORIZONTAL);
@@ -80,7 +99,6 @@ void PictureViewer::loadPicture(const char* filePath, bool newBlock, float rank)
 
 void PictureViewer::OnDeleteImg(wxCommandEvent& event)
 {
-	dbg("hi");
 	m_scroller->reduce([&event](wxPanel* panelPtr){
 		wxStackedImage* ptr=dynamic_cast<wxStackedImage*>(panelPtr);
 		if(ptr){
@@ -90,7 +108,7 @@ void PictureViewer::OnDeleteImg(wxCommandEvent& event)
 	});
 
 	m_dataViewPtr->removeNode(std::string(event.GetString().mb_str()));
-	if(true /*FileManager::deleteFile(event.GetString().mb_str())*/){
+	if(FileManager::deleteFile(event.GetString().mb_str())){
 		wxCommandEvent event(wxEVT_CUSTOM_EVENT, EvtID::REBUILD_HIST);
 		GetEventHandler()->AddPendingEvent(event);
 	}

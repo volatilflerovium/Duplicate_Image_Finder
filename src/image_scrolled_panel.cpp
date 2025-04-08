@@ -20,21 +20,6 @@ const wxString c_separatorColour("#678fff");
 
 //====================================================================
 
-ImageScrolledPanel::ImageScrolledPanel(wxWindow* parent, wxWindowID id, int width) 
-: ScrolledWindowBase(parent, width)
-, m_newBlock(false)
-{
-}
-
-//----------------------------------------------------------------------
-
-ImageScrolledPanel::~ImageScrolledPanel()
-{
-	//clear();
-}
-
-//----------------------------------------------------------------------
-
 void ImageScrolledPanel::addImage(const char* file, bool newBlock, float rank)
 {
 	const int sHeight=10;
@@ -50,14 +35,6 @@ void ImageScrolledPanel::addImage(const char* file, bool newBlock, float rank)
 	wxStackedImage* newPic=new wxStackedImage(this, wxDefaultPosition, m_width, file, rank);
 
 	addPanel(newPic);
-}
-
-//----------------------------------------------------------------------
-
-void ImageScrolledPanel::clear()
-{
-	ScrolledWindowBase::clear();
-	m_newBlock=false;
 }
 
 //----------------------------------------------------------------------

@@ -15,7 +15,7 @@ as [AppImage](https://appimage.org/) that can find duplicated images.
 Duplicated Image Finder finds duplicated pictures independently of rotations,
 mirroring and to certain degree resizing. However its algorithm is not perfect
 and, in this case, we take advantage of it and use a network visualization to
-present the similarity between the pictures of our collections.
+present the similarity between the pictures in our collections.
 The network visualization is powered by [vis.js](https://visjs.org/)
 
 You can see Duplicated Image Finder in action:
@@ -77,8 +77,9 @@ based on comparison of histograms to rank images. This algorithm is able to
 match images that are rotated, reflection and, to some degree, resized of
 another.
 
-For each image Duplicated Image Finder calculates a set of concentric mask
-proportional to the image and use these to get a set of histograms.
+For each image, Duplicated Image Finder calculates histograms over a 
+geometrical regions of a picture and use them to compare to other images
+and calculate a similarity ranking.
 
 We have two basic consequences of this:
 
@@ -102,6 +103,29 @@ From top-left to top-right:
 	start random selection of the pictures on the network
 - Restart will remove the files currently loaded in the application
 - Add Directories
+- Drop-down menu to select the mask for stracting information of an image.
+- Smooth level: smoothing an image can be interpreted as blending information
+into the local aread of the selection mask, therefore high value will
+allow to detect those image that are very similar each other.
 - Drop-down menu to select the level of similarity from Low, Medium and High
 - Repeat will allow you to change settings applied on the same selection of pictures after
 - Cancel button stops the application
+
+On the left side with have a column of blocks of images separated by a blue row.
+All the pictures in each block (except the first one) are similar to the first 
+picture in the same block. Because a image can be similar to others, the same image 
+might appears in multiple blocks. 
+
+Right click on each image in the left column will display a context menu:
+- Open: open the image with the default image manager of your system.
+- Delete: move the current image to the trash bin. The image will be removed 
+from left column and from the network.
+
+Left click will locate that image on the network
+Double click on any node in the network will scroll the left column to the 
+first reference to that image.
+
+On the main area, the results are displayed in a network visualization.
+To navigate:
+- with the mouse: dragging to move and scroll wheel to zoom in/out.
+- with keyboard: arrows to move around, key + to zoom in key - to zoom out. 

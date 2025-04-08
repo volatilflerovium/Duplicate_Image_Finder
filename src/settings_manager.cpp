@@ -18,33 +18,17 @@
 #include "file_manager.h"
 #include "cstr_split.h"
 
+#include "utilities/debug_utils.h"
+
 #include <fstream>
 
 //====================================================================
 
-bool SettingsManager::updateNetwork()
-{
-	std::fstream fileData("/tmp/.DuplicatedImgNetworkData.js", std::ios::out | std::ios::trunc);
-	if(fileData.is_open()){
-		fileData<<"function loadSettings()\n\
-		{\n\
-			interfaceMod.setSettings("; 
-			fileData<<getNodeBorderWidth()<<", ";
-			fileData<<"\""<<getNodeBorderColor()<<"\", ";
-			fileData<<"\""<<getNodeBkgColor()<<"\", ";
-			fileData<<"\""<<getNodeSelectedColor()<<"\", ";
-			fileData<<"\""<<getNodeFontColor()<<"\", ";
-			fileData<<"\""<<getEdgesColor()<<"\", ";
-			fileData<<"\""<<getCanvasColor()<<"\");\n";
-			fileData<<"}\n";
-		fileData.close();
-		return true;
-	}
-	
-	return false;
-}
+SettingsManager* SettingsManager::m_settingsPtr=SettingsManager::init();
 
-bool SettingsManager::loadSettings()
+//--------------------------------------------------------------------
+
+SettingsManager::SettingsManager()
 {
 	std::ifstream settingsFile;
 	settingsFile.open(FileManager::c_SAVE_SETTING.c_str(), std::ifstream::in);
@@ -80,15 +64,13 @@ bool SettingsManager::loadSettings()
 			m_resume=1;
 		}
 		
-		return updateNetwork();
+		updateNetwork();
 	}
-	
-	return false;
 }
 
 //--------------------------------------------------------------------
 
-void SettingsManager::save()
+SettingsManager::~SettingsManager()
 {
 	std::fstream fileData(FileManager::c_SAVE_SETTING.c_str(), std::ios::out | std::ios::trunc);
 	if(fileData.is_open()){
@@ -109,6 +91,30 @@ void SettingsManager::save()
 	else{
 		Logger::log("Save settings to file failed.");
 	}
+}
+
+//--------------------------------------------------------------------
+
+bool SettingsManager::updateNetwork()
+{
+	std::fstream fileData("/tmp/.DuplicatedImgNetworkData.js", std::ios::out | std::ios::trunc);
+	if(fileData.is_open()){
+		fileData<<"function loadSettings()\n\
+		{\n\
+			interfaceMod.setSettings("; 
+			fileData<<m_borderWidth<<", ";
+			fileData<<"\""<<m_nodesColorBorder<<"\", ";
+			fileData<<"\""<<m_nodesBkgColor<<"\", ";
+			fileData<<"\""<<m_nodesSelectedColor<<"\", ";
+			fileData<<"\""<<m_nodesFontColor<<"\", ";
+			fileData<<"\""<<m_edgesColor<<"\", ";
+			fileData<<"\""<<m_canvasColor<<"\");\n";
+			fileData<<"}\n";
+		fileData.close();
+		return true;
+	}
+
+	return false;
 }
 
 //====================================================================

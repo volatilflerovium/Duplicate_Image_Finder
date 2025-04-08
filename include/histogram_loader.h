@@ -28,7 +28,6 @@
 class HistogramLoader
 {
 	public:
-
 		static void init( 
 			const std::string& directory, 
 			const std::string& vdoList
@@ -45,8 +44,8 @@ class HistogramLoader
 		
 		static void saveCurrentState()
 		{
-			SettingsManager::getSettingManager().setChunkL(m_chunkNumberL);
-			SettingsManager::getSettingManager().setChunkR(m_chunkNumberR);
+			SettingsManager::setChunkL(m_chunkNumberL);
+			SettingsManager::setChunkR(m_chunkNumberR);
 		}
 
 	private:

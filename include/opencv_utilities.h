@@ -6,17 +6,8 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE. 
-* 
 *                                                                    *
-* std::vector<std::string> exCmd(const char* cmd);                   *
-* void sorting(std::vector<int>&, std::vector<double>&, int, double);*
-* cv::Mat mkMask2(const cv::Mat&);                                   *
-* cv::Mat mkMask(const cv::Mat&, int, int, int);                     *
-* cv::Mat getNormalizeHistogramG(const cv::Mat&, const cv::Mat&);    *
-* cv::Mat getNormalizeHistogram(const cv::Mat&, const cv::Mat&);     *
-* std::vector<cv::Mat> getNormalizeHistogram8(const char*);          *
-* void loadHist(std::vector<cv::Mat>&, const std::string&, int;      *
-* void mkHistograms(const std::string&, const std::string&);         *
+* class ImageProcessor                                               *
 *                                                                    *
 * Version: 1.0                                                       *
 * Date:    29-05-2021   (Reviewed 03/2025)                           *
@@ -24,40 +15,93 @@
 **********************************************************************/
 #ifndef OPENCV_UTILITIES_H
 #define OPENCV_UTILITIES_H
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
+#include "data.h"
 
-#include <vector>
-#include <string>
+#include "utilities/debug_utils.h"
 
 //====================================================================
 
-std::vector<std::string> exCmd(const char* cmd);
+class ImageProcessor final
+{
+	public:
+		enum MaskMode
+		{
+			RectD=0,
+			RectF,
+			HashD,
+			HashF,
+		};
 
-void sorting(std::vector<int>& rLineNumber, std::vector<double>& ranks, int lineNumber, double rank);
+	public:
+		~ImageProcessor()=default;
 
-cv::Mat mkMask2(const cv::Mat& img);
+		static void setFilterSize(uint filterSize);
+		static void setMaskMode(const MaskMode maskMode);
 
-cv::Mat mkMask(const cv::Mat& img, int offsetX, int offsetY, int wide);
+		static bool setupHistograms(const char* image_name, int lineNumb);
+		static bool rebuildHistograms();
+		static void printMat(const cv::Mat& img, const char* filePath="");
 
-cv::Mat getNormalizeHistogramG(const cv::Mat& img, const cv::Mat& mask);
+	private:
+		cv::Mat m_histograms[DIMGS::DATA_SIZE];
+		cv::Mat m_mask;
+		unsigned char m_lastData;
+		uint m_filterSize;
+		bool m_dynamicMask;
+		bool m_useHashMask;
 
-cv::Mat getNormalizeHistogram(const cv::Mat& img, const cv::Mat& mask);
+		void resetMask(const cv::Size& imgSize);
+		void mkMaskRect(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wideY);
+		void mkMaskHash(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wideY);
 
-cv::Mat mkMask2(const cv::Mat& img, int offsetX, int offsetY, int wideX, int wideY);
+		bool settinsChanged();		
 
-std::vector<cv::Mat> getNormalizeHistogram82(const char* image_name);
+		ImageProcessor();
+		static ImageProcessor& getInstance();
 
-std::vector<cv::Mat> getNormalizeHistogram8(const char* image_name);
+		void makeNormalizeHistogram(const char* image_name);
+};
 
-void loadHist(std::vector<cv::Mat>& hists, const std::string& dir, int j);
+//--------------------------------------------------------------------
 
-void mkHistograms(const std::string& picsPath, const std::string& video_list);
+inline ImageProcessor::ImageProcessor()
+:m_filterSize(0)
+, m_dynamicMask(true)
+, m_useHashMask(false)
+{
+	settinsChanged();
+}
 
-int blockComp2(int x);
+//--------------------------------------------------------------------
 
-void mkDummy(const char* path, unsigned char r, unsigned char g, unsigned char b);
+inline ImageProcessor& ImageProcessor::getInstance()
+{
+	static ImageProcessor instance;
+	return instance;
+}
 
+//--------------------------------------------------------------------
+
+inline void ImageProcessor::setFilterSize(uint filterSize)
+{
+	getInstance().m_filterSize=filterSize;
+}
+
+//--------------------------------------------------------------------
+
+inline void ImageProcessor::setMaskMode(const MaskMode maskMode)
+{
+	getInstance().m_dynamicMask=maskMode==MaskMode::RectD || maskMode==MaskMode::HashD;
+	getInstance().m_useHashMask=maskMode==MaskMode::HashF || maskMode==MaskMode::HashD;
+}
+
+//--------------------------------------------------------------------
+
+inline bool ImageProcessor::rebuildHistograms()
+{
+	return getInstance().settinsChanged();
+}
+		
 //====================================================================
 
 #endif

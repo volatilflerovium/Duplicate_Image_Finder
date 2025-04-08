@@ -377,22 +377,40 @@ SUBDIR FileManager::reduce(const std::string& dirTest, std::vector<std::string>&
 
 //----------------------------------------------------------------------
 
-int FileManager::crawler(const char* directoryPath)//, std::map<std::string, uint>& files)
+int FileManager::crawler(const char* directoryPath)
 {
 	std::error_code ec;
-	int count=0;
+	
 	std::filesystem::current_path(directoryPath, ec);
-	for(auto const& dirEntry : std::filesystem::recursive_directory_iterator(directoryPath, ec)){
-		if(dirEntry.is_regular_file()){
-			if(FileManager::isFileSuported(dirEntry.path().extension().c_str())){
-				if(m_fileMap.end()==m_fileMap.find(dirEntry.path().c_str())){
-					m_fileMap.emplace(dirEntry.path().c_str(), 0);
-					count++;
+	if(ec.value()!=0){
+		return 0;
+	}
+
+	auto dirEntry= std::filesystem::recursive_directory_iterator(directoryPath, ec);
+	if(ec.value()!=0){
+		return 0;
+	}
+
+	int count=0;
+	while(dirEntry!=std::filesystem::recursive_directory_iterator()){
+		if(ec.value()==0){
+			dirEntry->is_regular_file(ec);
+			if(ec.value()==0){
+				if(FileManager::isFileSuported(dirEntry->path().extension().c_str())){
+					if(m_fileMap.end()==m_fileMap.find(dirEntry->path().c_str())){
+						m_fileMap.emplace(dirEntry->path().c_str(), 0);
+						count++;
+					}
 				}
-			}
+			}// */
+		}
+
+		dirEntry.increment(ec);
+
+		if(ec.value()!=0){
+			//dbg("error: ", ec.message());
 		}
 	}
 	return count;
 }
-
 //----------------------------------------------------------------------

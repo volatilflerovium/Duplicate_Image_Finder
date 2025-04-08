@@ -2,5 +2,5 @@
 bin/
 build/
 data_visualization/network_data.js
-wxDuplicated_Image_Finder-x86_64.AppImage
-
+*.AppImage
+debug_dir/

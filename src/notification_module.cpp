@@ -16,34 +16,44 @@
 #include "notification_module.h"
 #include "wx_constants.h"
 
+//----------------------------------------------------------------------
+
 NotificationModule* NotificationModule::m_instance(nullptr);
+
+//----------------------------------------------------------------------
+
+NotificationModule::DataBlock::DataBlock(wxWindow* parent, const char* description, const wxSize& size, long align)
+{		
+	m_key=new wxStaticText(parent, wxID_ANY, wxString::Format(wxT("%s:"), description));
+	m_val=new wxStaticText(parent, wxID_ANY, wxT("0"), wxDefaultPosition, size, align);
+	m_sizer=new wxBoxSizer(wxHORIZONTAL);
+	m_sizer->Add(m_key, 0, wxRIGHT, 10);
+	m_sizer->Add(m_val, 1, wxEXPAND);
+}
+
+//----------------------------------------------------------------------
+
+NotificationModule::DataBlock::~DataBlock()
+{
+	wxDELETE(m_key);
+	wxDELETE(m_val);
+}
 
 //----------------------------------------------------------------------
 
 NotificationModule::NotificationModule(wxWindow* parent)
 : wxPanel(parent)
 {
-	SetMinSize(wxSize(WX::MIN_WIDTH, 30));
-	SetSize(wxSize(WX::MIN_WIDTH, 30));
+	const int lineHeight=20;
 
+	m_rank=new DataBlock(this, "Rank", wxDefaultSize);
+	m_nodes=new DataBlock(this, "Images", wxSize(50, lineHeight), wxALIGN_RIGHT);
+	
 	wxBoxSizer* hbox = new wxBoxSizer(wxHORIZONTAL);
-	const int lineHeight=30;
-	wxStaticText* staticFilePath = new wxStaticText(this, wxID_ANY, wxT("File: "));
-	hbox->Add(staticFilePath);
-	
-	int width=20+staticFilePath->GetSize().GetWidth();
 
-	wxStaticText* staticRank = new wxStaticText(this, wxID_ANY, wxT("rank: "));
-	width+=staticRank->GetSize().GetWidth();
-
-	m_rankText=new wxStaticText(this, -1, wxT("     "), wxDefaultPosition,  wxSize(70, lineHeight), wxALIGN_RIGHT);
-	width+=m_rankText->GetSize().GetWidth();
-	
-	m_filePathText=new wxStaticText(this, -1, wxT(""),  wxDefaultPosition, wxSize(WX::MIN_WIDTH-width, lineHeight), wxST_ELLIPSIZE_MIDDLE);
-	
-	hbox->Add(m_filePathText, 1, wxEXPAND, 10);
-	hbox->Add(staticRank, 0);
-	hbox->Add(m_rankText, 0, wxRIGHT, 10);
+	hbox->Add(m_rank->m_sizer, 1, wxEXPAND | wxRIGHT, 10);
+	hbox->Add(1, 1, wxEXPAND);
+	hbox->Add(m_nodes->m_sizer, 1, wxEXPAND);
 
 	Bind(wxEVT_SIZE, &NotificationModule::onResize, this);
 
@@ -52,52 +62,8 @@ NotificationModule::NotificationModule(wxWindow* parent)
 
 //----------------------------------------------------------------------
 
-NotificationModule::~NotificationModule(){
-	wxDELETE(m_filePathText);
-	wxDELETE(m_rankText);
-}
-
-//----------------------------------------------------------------------
-
-NotificationModule* NotificationModule::init(wxWindow* parent){
-	if(!m_instance){
-		m_instance=new NotificationModule(parent);
-	}
-
-	return m_instance;
-}
-
-//----------------------------------------------------------------------
-
-void NotificationModule::setLabels(const wxString& filePath, float rank){
-	m_filePathText->SetLabel(filePath);
-	m_rankText->SetLabel(wxString::Format(wxT("%0.4f"), rank));
-	Layout();
-}
-
-//----------------------------------------------------------------------
-
-void NotificationModule::Clear(){
-	m_instance->clear();
-}
-
-//----------------------------------------------------------------------
-
-void NotificationModule::clear(){
-	m_filePathText->SetLabel(wxT(""));
-	m_rankText->SetLabel(wxT(""));
-	Layout();
-}
-
-//----------------------------------------------------------------------
-
-void NotificationModule::displayData(const wxString& filePath, float rank){
-	m_instance->setLabels(filePath, rank);
-}
-
-//----------------------------------------------------------------------
-
-void NotificationModule::onResize(wxSizeEvent& event){
+void NotificationModule::onResize(wxSizeEvent& event)
+{
 	Layout();
 	event.Skip();
 }

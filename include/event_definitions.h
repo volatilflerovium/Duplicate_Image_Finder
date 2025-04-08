@@ -27,7 +27,10 @@ enum EvtID
 	LEFT_CLICK_IMAGE,
 	RIGHT_CLICK_IMAGE,
 	DELETE_IMG,
+	FIND_IMG,
 	REBUILD_HIST,
+	NODE_COUNT,
+	ANIMATION_READY,
 };
 
 inline void postEvent(wxEvtHandler* h, wxEventType commandEventType, int id)

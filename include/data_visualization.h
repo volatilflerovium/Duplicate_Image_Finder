@@ -16,7 +16,7 @@
 #ifndef _DATA_VISUALZATION_H
 #define _DATA_VISUALZATION_H
 #include "file_manager.h"
-#include "settings_manager.h"
+
 #include "utilities/debug_utils.h"
 
 #include <wx/wx.h>
@@ -27,21 +27,9 @@
 class DataView : public wxPanel
 {
 	public:
-		DataView(wxWindow* parent, const wxSize& size=wxDefaultSize)
-		:wxPanel(parent, wxID_ANY, wxDefaultPosition, size)
-		, m_currentNode(0)
-		, m_nodeCounter(0)
-		, m_edgeCounter(0)
-		{
-			m_webViewPtr=wxWebView::New(this, wxID_ANY, FileManager::dataVisualizationURL().c_str(), wxDefaultPosition, size);
+		DataView(wxWindow* parent, const wxSize& size=wxDefaultSize);
 
-			enableDebug();
-		}
-
-		virtual ~DataView()
-		{
-			wxDELETE(m_webViewPtr);
-		}
+		virtual ~DataView();
 
 		void SetSize(int w, int h);
 		void updateData(const char* fileName, bool newNode);
@@ -50,6 +38,7 @@ class DataView : public wxPanel
 		void selectNode(const std::string& filePath);
 		void removeNode(const std::string& filePath);
 		void unselectNode();
+		void transferCompletred();
 		void startAnimation();
 
 	private:
@@ -67,6 +56,13 @@ class DataView : public wxPanel
 		void addEdge(int from, int to);
 		void addEdge(int id1, int id2, bool a);
 };
+
+//--------------------------------------------------------------------
+
+inline DataView::~DataView()
+{
+	wxDELETE(m_webViewPtr);
+}
 
 //--------------------------------------------------------------------
 
@@ -122,9 +118,17 @@ inline void DataView::removeNode(const std::string& filePath)
 
 //--------------------------------------------------------------------
 
+inline void DataView::transferCompletred()
+{
+	wxString jsCode=wxString::Format("interfaceMod.transferDone(%d);", m_nodeCounter);
+	m_webViewPtr->RunScript(jsCode);
+}
+
+//--------------------------------------------------------------------
+
 inline void DataView::startAnimation()
 {
-	wxString jsCode=wxString::Format("interfaceMod.startShow();");
+	wxString jsCode="AnimatedShow.animatedShow();";
 	m_webViewPtr->RunScript(jsCode);
 }
 
@@ -134,34 +138,6 @@ inline void DataView::unselectNode()
 {
 	wxString jsCode="interfaceMod.unselectNode();";
 	m_webViewPtr->RunScript(jsCode);
-}
-
-//--------------------------------------------------------------------
-
-inline void DataView::loadSettings()
-{
-	auto settings=SettingsManager::getSettingManager();
-	wxString jsCode=wxString::Format("interfaceMod.setSettings(%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\");", 
-		settings.getNodeBorderWidth(),
-		settings.getNodeBorderColor(),
-		settings.getNodeBkgColor(),
-		settings.getNodeSelectedColor(),
-		settings.getNodeFontColor(), 
-		settings.getEdgesColor(), 
-		settings.getCanvasColor());
-	 
-	m_webViewPtr->RunScript(jsCode);
-}
-
-//--------------------------------------------------------------------
-
-inline uint DataView::addFile(const std::string& fileName)
-{
-	const uint t=FileManager::findKey(fileName, 1+m_nodeCounter);
-	m_isNew=(t==1+m_nodeCounter);
-	m_nodeCounter+=m_isNew;
-
-	return t;
 }
 
 //--------------------------------------------------------------------
@@ -185,10 +161,8 @@ inline void DataView::updateData(const char* fileName, bool newNode)
 
 inline void DataView::addNode(int id, const char* path)
 {
-	wxString jsCode=wxString::Format("interfaceMod.addNode(\{id:%d, shape:\"image\", image:\"%s\", title:\"%s\"});", id, path, path);
-	//m_webViewPtr->RunScriptAsync(jsCode);
+	wxString jsCode=wxString::Format("interfaceMod.addNode({id:%d, shape:\"image\", image:\"%s\", title:\"%s\"});", id, path, path);
 	m_webViewPtr->RunScript(jsCode);
-	dbg("=================== node id: ", id);
 }
 
 //--------------------------------------------------------------------
@@ -196,7 +170,6 @@ inline void DataView::addNode(int id, const char* path)
 inline void DataView::addEdge(int from, int to)
 {
 	wxString jsCode=wxString::Format("interfaceMod.addEdge({id: %d, from:%d, to:%d});", ++m_edgeCounter, from, to);
-	dbg("Edge id: ", m_edgeCounter);
 	m_webViewPtr->RunScript(jsCode);
 }
 

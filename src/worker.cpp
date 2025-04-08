@@ -21,6 +21,28 @@
 
 //====================================================================
 
+static void sorting(std::vector<int>& rLineNumber, std::vector<double>& ranks, int lineNumber, double rank)
+{
+	rLineNumber.push_back(lineNumber);
+	ranks.push_back(rank);
+	int t=ranks.size()-1;
+	for(size_t i=0; i<ranks.size(); i++){
+		if(ranks[i]<rank){
+			for(int j=i; j<t; j++){
+				ranks[t]=ranks[j];
+				ranks[j]=rank;
+				rank=ranks[t];
+				rLineNumber[t]=rLineNumber[j];
+				rLineNumber[j]=lineNumber;
+				lineNumber=rLineNumber[t];
+			}
+			break;
+		}
+	}
+}
+
+//====================================================================
+
 std::mutex Worker::m_bufferMtx;
 
 //----------------------------------------------------------------------

@@ -22,6 +22,7 @@
 
 #include <wx/wx.h>
 #include <wx/dirdlg.h>
+#include <wx/spinctrl.h>
 
 #if 0
 #define REBOOOT           1     // m_rebootBtn
@@ -71,8 +72,11 @@ class DuplicateImgGUI : public wxFrame
 		PictureViewer* m_pictureViewer;
 		WxWorker* m_worker;
 		ExtendedPopup* m_directoriesPopup;
+		wxSpinCtrl* m_blurFilter;
 
 		wxChoice* m_sensitivityChoice; 
+		wxChoice* m_maskType; 
+		wxChoice* m_maskMode; 
 
 		wxStaticText* m_staticFiles;
 		wxStaticText* m_totalFilesText;

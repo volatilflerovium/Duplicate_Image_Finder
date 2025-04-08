@@ -61,13 +61,9 @@ wxStackedImage::wxStackedImage(wxWindow* parent, const wxPoint& pos, int width, 
 
 void wxStackedImage::OnLeftClick(wxCommandEvent& event)
 {
-	if(m_last){
-		m_last->SetBackgroundColour(wxColour(wxT("white")));
-	}
-	SetBackgroundColour(wxColour(wxT("green")));
-	m_last=this;
+	highlight();
 	s_dataViewPtr->selectNode(std::string(m_pic->getFile().mb_str()));
-	NotificationModule::displayData(m_pic->getFile(), m_rank);
+	NotificationModule::setRank(m_rank);
 }
 
 //----------------------------------------------------------------------
@@ -94,10 +90,7 @@ void wxStackedImage::OnOpenImg(wxCommandEvent& event)
 
 void wxStackedImage::OnDeleteImg(wxCommandEvent& event)
 {
-	if(m_last){
-		m_last->SetBackgroundColour(wxColour(wxT("white")));
-	}
-	SetBackgroundColour(wxColour(wxT("red")));
+	highlight("red");
 	m_last=nullptr;
 	wxMessageDialog removePicDialog(
 		this,
@@ -112,12 +105,6 @@ void wxStackedImage::OnDeleteImg(wxCommandEvent& event)
 		//GetEventHandler()->AddPendingEvent(event);
 		wxPostEvent(this, event);
 	}
-}
-
-//----------------------------------------------------------------------
-
-void wxStackedImage::clearBackground(){
-	m_last=nullptr;
 }
 
 //====================================================================

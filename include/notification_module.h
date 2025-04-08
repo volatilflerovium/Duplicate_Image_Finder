@@ -18,26 +18,101 @@
 
 #include <wx/wx.h>
 
+#include "utilities/debug_utils.h"
+
 //====================================================================
 
 class NotificationModule : public wxPanel
 {
 	public:
+		virtual ~NotificationModule();
+
 		static NotificationModule* init(wxWindow* parent);
-		static void displayData(const wxString& m_file, float rank);
 		static void Clear();
-		void clear();
-		void setLabels(const wxString& m_file, float rank);
-		~NotificationModule();
+		static void setRank(float rank);
+		static void setNodes(int rank);
+		static void setNodes(const wxString& rank);
 		
 	private:
 		static NotificationModule* m_instance;
-		wxStaticText* m_filePathText;
-		wxStaticText* m_rankText;
+
+		struct DataBlock
+		{
+			DataBlock(wxWindow* parent, const char* description, const wxSize& size, long align=wxALIGN_LEFT);
+			~DataBlock();
+
+			void setValue(const wxString& value)
+			{
+				m_val->SetLabel(value);
+			}
+
+			void setValue(int value)
+			{
+				setValue(wxString::Format(wxT("%d"), value));
+			}
+			
+			void clear(const char* val="")
+			{
+				m_val->SetLabel(val);
+			}
+
+			wxStaticText* m_key;
+			wxStaticText* m_val;
+			wxBoxSizer* m_sizer;
+		};
+		
+		DataBlock* m_nodes;
+		DataBlock* m_rank;
+		
 		NotificationModule(wxWindow* parent);
 		void onResize(wxSizeEvent& evt);
-
 };
+
+//----------------------------------------------------------------------
+
+inline NotificationModule::~NotificationModule()
+{
+	wxDELETE(m_nodes);
+	wxDELETE(m_rank);
+}
+
+//----------------------------------------------------------------------
+
+inline NotificationModule* NotificationModule::init(wxWindow* parent)
+{
+	if(!m_instance){
+		m_instance=new NotificationModule(parent);
+	}
+	return m_instance;
+}
+
+//----------------------------------------------------------------------
+
+inline void NotificationModule::setNodes(const wxString& nodes)
+{
+	m_instance->m_nodes->setValue(nodes);
+}
+//----------------------------------------------------------------------
+
+inline void NotificationModule::setNodes(int nodes)
+{
+	m_instance->m_nodes->setValue(nodes);
+}
+
+//----------------------------------------------------------------------
+
+inline void NotificationModule::setRank(float rank)
+{
+	m_instance->m_rank->setValue(wxString::Format(wxT("%0.4f"), rank));
+}
+
+//----------------------------------------------------------------------
+
+inline void NotificationModule::Clear()
+{
+	m_instance->m_rank->clear();
+	m_instance->m_nodes->clear("0");
+}
 
 //====================================================================
 

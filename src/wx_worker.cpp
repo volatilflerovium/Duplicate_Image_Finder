@@ -40,13 +40,11 @@ WxWorker::WxWorker(wxFrame* parent)
 
 	HistogramLoader::init(FileManager::c_DIR_HIST, FileManager::c_FILE_LIST);
 
-	auto settings=SettingsManager::getSettingManager();
-
-	if(settings.getResume()!=1){
+	if(SettingsManager::getResume()!=1){
 		FileManager::cleanUp();
 	}
 	else{
-		HistogramLoader::setChunks(std::abs(settings.getChunkL()), std::abs(settings.getChunkR()));
+		HistogramLoader::setChunks(std::abs(SettingsManager::getChunkL()), std::abs(SettingsManager::getChunkR()));
 	}
 
 	int num_cpus =3*std::thread::hardware_concurrency();
@@ -93,15 +91,16 @@ bool WxWorker::mkHist()
 {
 	static int lineNumb=1;
 
-	if(m_skipHist){
+	// Order is important to allow the evaluation for the function!
+	if(!ImageProcessor::rebuildHistograms() && m_skipHist){
 		sendHistogramStatus(lineNumb-1);
 		return true;
 	}
-	std::ios_base::openmode mode=std::ios::trunc;
-
-	std::ofstream fileList(FileManager::c_FILE_LIST, mode);
 
 	lineNumb=1;
+
+	std::ios_base::openmode mode=std::ios::trunc;
+	std::ofstream fileList(FileManager::c_FILE_LIST, mode);
 	
 	FileManager::loopFilesMap([&](const std::string& imageName, uint& val){
 		val=0;
@@ -112,17 +111,11 @@ bool WxWorker::mkHist()
 
 		try
 		{
-			std::vector<cv::Mat> hist_base1=getNormalizeHistogram82(imageName.c_str());
-
-			for(int k=0; k<DIMGS::DATA_SIZE; k++){
-				if(m_stopJob){
-					return false;
-				}
-				std::string file_name=FileManager::c_DIR_HIST+std::string("img")+std::to_string(lineNumb)+std::string("_")+std::to_string(k)+std::string(".yml");
-				cv::FileStorage storage(file_name, cv::FileStorage::WRITE);
-				storage << "img" << hist_base1[k];
-				storage.release();
+			ImageProcessor::setupHistograms(imageName.c_str(), lineNumb);
+			if(m_stopJob){
+				return false;
 			}
+
 			fileList<<imageName<<"\n";
 			lineNumb++;
 		}

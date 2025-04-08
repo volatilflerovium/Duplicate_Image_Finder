@@ -20,222 +20,152 @@
 
 //====================================================================
 
-class SettingsManager final
+class SettingsManager 
 {
 	public:
-		~SettingsManager()
+		virtual ~SettingsManager();
+
+		static const wxString& getNodeBorderColor()
 		{
-			save();
+			return m_settingsPtr->m_nodesColorBorder;
 		}
 
-		static SettingsManager& getSettingManager()
+		static void setNodeBorderColor(const wxString& color)
 		{
-			static SettingsManager manager;
-			return manager;
+			m_settingsPtr->m_nodesColorBorder=color;
 		}
 
-		void save();
-		
-		bool updateNetwork();
-
-		const char* getNodeBorderColor() const
+		static const char* getNodeBkgColor()
 		{
-			return m_nodesColorBorder.c_str();
+			return m_settingsPtr->m_nodesBkgColor.c_str();
 		}
 
-		void setNodeBorderColor(const char* color)
+		static void setNodeBkgColor(const wxString& color)
 		{
-			m_nodesColorBorder=color;
+			m_settingsPtr->m_nodesBkgColor=color;
 		}
 
-		template<typename FUNC>
-		wxTextCtrl* NodeBorderColor(wxWindow* parent, FUNC cbk)
+		static const wxString& getNodeSelectedColor()
 		{
-			return builder(parent, getNodeBorderColor(), [cbk](const wxString& val){
-				SettingsManager::getSettingManager().setNodeBorderColor(val.mb_str());
-				cbk();	
-			});
+			return m_settingsPtr->m_nodesSelectedColor;
 		}
 
-		const char* getNodeBkgColor() const
+		static void setNodeSelectedColor(const wxString& color)
 		{
-			return m_nodesBkgColor.c_str();
+			m_settingsPtr->m_nodesSelectedColor=color;
 		}
 
-		void setNodeBkgColor(const char* color)
+		static const wxString& getNodeFontColor()
 		{
-			m_nodesBkgColor=color;
+			return m_settingsPtr->m_nodesFontColor;
 		}
 
-		template<typename FUNC>
-		wxTextCtrl* NodeBkgColor(wxWindow* parent, FUNC cbk)
+		static void setNodeFontColor(const wxString& color)
 		{
-			return builder(parent, getNodeBkgColor(), [cbk](const wxString& val){
-				SettingsManager::getSettingManager().setNodeBkgColor(val.mb_str());
-				cbk();
-			});
+			m_settingsPtr->m_nodesFontColor=color;
 		}
 
-		const char* getNodeSelectedColor() const
+		static const wxString& getEdgesColor()
 		{
-			return m_nodesSelectedColor.c_str();
-		}
-
-		void setNodeSelectedColor(const char* color)
-		{
-			m_nodesSelectedColor=color;
-		}
-
-		template<typename FUNC>
-		wxTextCtrl* NodeSelectedColor(wxWindow* parent, FUNC cbk)
-		{
-			return builder(parent, getNodeSelectedColor(), [cbk](const wxString& val){
-				SettingsManager::getSettingManager().setNodeSelectedColor(val.mb_str());
-				cbk();
-			});
-		}
-
-		const char* getNodeFontColor() const
-		{
-			return m_nodesFontColor.c_str();
-		}
-
-		void setNodeFontColor(const char* color)
-		{
-			m_nodesFontColor=color;
-		}
-
-		template<typename FUNC>
-		wxTextCtrl* NodeFontColor(wxWindow* parent, FUNC cbk)
-		{
-			return builder(parent, getNodeFontColor(), [cbk](const wxString& val){
-				SettingsManager::getSettingManager().setNodeBorderColor(val.mb_str());
-				cbk();
-			});
-		}
-
-		const char* getEdgesColor() const
-		{
-			return m_edgesColor.c_str();
+			return m_settingsPtr->m_edgesColor;
 		}
 		
-		void setEdgesColor(const char* color)
+		static void setEdgesColor(const wxString& color)
 		{
-			m_edgesColor=color;
+			m_settingsPtr->m_edgesColor=color;
 		}
 
-		template<typename FUNC>
-		wxTextCtrl* EdgesColor(wxWindow* parent, FUNC cbk)
+		static const wxString& getCanvasColor()
 		{
-			return builder(parent, getEdgesColor(), [cbk](const wxString& val){
-				SettingsManager::getSettingManager().setEdgesColor(val.mb_str());
-				cbk();
-			});
+			return m_settingsPtr->m_canvasColor;
 		}
 
-		const char* getCanvasColor() const
+		static void setCanvasColor(const wxString& color)
 		{
-			return m_canvasColor.c_str();
+			m_settingsPtr->m_canvasColor=color;
 		}
 
-		void setCanvasColor(const char* color)
+		static uint getNodeBorderWidth()
 		{
-			m_canvasColor=color;
+			return m_settingsPtr->m_borderWidth;
 		}
 
-		template<typename FUNC>
-		wxTextCtrl* CanvasColor(wxWindow* parent, FUNC cbk)
+		static void setNodeBorderWidth(uint width)
 		{
-			return builder(parent, getCanvasColor(), [cbk](const wxString& val){
-				SettingsManager::getSettingManager().setCanvasColor(val.mb_str());
-				cbk();	
-			});
+			m_settingsPtr->m_borderWidth=width;
 		}
 
-		uint getNodeBorderWidth() const
+		static int getChunkL()
 		{
-			return m_borderWidth;
+			return m_settingsPtr->m_chunkL;
 		}
 
-		void setNodeBorderWidth(uint width)
+		static void setChunkL(int chunk)
 		{
-			m_borderWidth=width;
+			m_settingsPtr->m_chunkL=chunk;
 		}
 
-		template<typename FUNC>
-		wxTextCtrl* NodeBorderWidth(wxWindow* parent, FUNC cbk)
+		static int getChunkR()
 		{
-			return builder(parent, wxString::Format("%d", getNodeBorderWidth()), [cbk](const wxString& val){
-				SettingsManager::getSettingManager().setNodeBorderWidth(wxAtoi(val));
-				cbk();	
-			});
+			return m_settingsPtr->m_chunkR;
 		}
 
-		int getChunkL() const
+		static void setChunkR(int chunk)
 		{
-			return m_chunkL;
+			m_settingsPtr->m_chunkR=chunk;
 		}
 
-		void setChunkL(int chunk)
+		static int getResume() 
 		{
-			m_chunkL=chunk;
+			return m_settingsPtr->m_resume;
 		}
 
-		int getChunkR() const
+		static void setResume(int resume)
 		{
-			return m_chunkR;
-		}
-
-		void setChunkR(int chunk)
-		{
-			m_chunkR=chunk;
-		}
-
-		int getResume() const
-		{
-			return m_resume;
-		}
-
-		void setResume(int resume)
-		{
-			m_resume=resume;
+			m_settingsPtr->m_resume=resume;
 		}
 
 	private:
-		std::string m_nodesColorBorder{"#406897"};
-		std::string m_nodesBkgColor{"#FFFFAA"};
-		std::string m_nodesSelectedColor{"#FFFF00"};
-		std::string m_nodesFontColor{"#eeeeee"};
-		std::string m_edgesColor{"lightgray"};
-		std::string m_canvasColor{"#ebf5fc"};
+		wxString m_nodesColorBorder{"#406897"};
+		wxString m_nodesBkgColor{"#FFFFAA"};
+		wxString m_nodesSelectedColor{"#FFFF00"};
+		wxString m_nodesFontColor{"#eeeeee"};
+		wxString m_edgesColor{"lightgray"};
+		wxString m_canvasColor{"#ebf5fc"};
+		static SettingsManager* m_settingsPtr;
 		
 		uint m_borderWidth{2};
 		int m_chunkL{-1};
 		int m_chunkR{-1};
 		int m_resume{-1};
+		
+		SettingsManager();
 
-		SettingsManager()
+		bool updateNetwork();
+
+		struct Deleter
 		{
-			loadSettings();
-		}
-
-		bool loadSettings();
-
-		template<typename FUNC>
-		wxTextCtrl* builder(wxWindow* parent, const char* val, FUNC cbk)
-		{
-			wxTextCtrl* ctrl=new wxTextCtrl(parent, wxID_ANY, 
-			val, 
-			wxDefaultPosition,
-			//wxDefaultSize, 
-			wxSize(120, -1), 
-			wxTE_PROCESS_ENTER);
-
-			ctrl->Bind(wxEVT_TEXT_ENTER, [cbk, ctrl](wxCommandEvent& event){			
-				cbk(ctrl->GetValue());
-			});
+			Deleter()
+			:m_settingsPtr(nullptr)
+			{}
 			
-			return ctrl;
+			~Deleter()
+			{
+				if(m_settingsPtr){
+					delete m_settingsPtr;
+				}
+			}
+
+			SettingsManager* m_settingsPtr;			
+		};	
+
+		static SettingsManager* init()
+		{
+			static Deleter deleter;
+			if(!deleter.m_settingsPtr){
+				deleter.m_settingsPtr=new SettingsManager;
+			}
+			return deleter.m_settingsPtr;
 		}
 };
 

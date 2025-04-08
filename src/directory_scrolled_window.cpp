@@ -33,12 +33,10 @@ DirectoryPanel::DirectoryPanel(wxWindow* parent, uint posY, uint width, const wx
 	const int secondColWidth=100;
 	auto path=new wxStaticText(this, wxID_ANY, fileName, wxDefaultPosition, 
 	wxSize(width-(secondColWidth+10), -1), wxST_ELLIPSIZE_MIDDLE);
-	//path->SetBackgroundColour(wxColour("#FFFF00"));
 
 	auto numFiles=new wxStaticText(this, wxID_ANY, data, wxDefaultPosition, 
 	wxSize(secondColWidth-2, -1), wxALIGN_RIGHT);
 	
-	//numFiles->SetBackgroundColour(wxColour("#00FF00"));
 	wxBoxSizer* hbox=new wxBoxSizer(wxHORIZONTAL);
 	hbox->Add(path, 0,  wxTOP | wxBOTTOM, 5);
 	

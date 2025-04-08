@@ -27,6 +27,7 @@ class wxStackedImage : public wxPanel
 		virtual ~wxStackedImage(){};
 		static void clearBackground();
 		const wxString& getFileName() const;
+		void highlight(const char* color="yellow");
 
 	private:
 		static wxStackedImage* m_last;
@@ -43,9 +44,29 @@ class wxStackedImage : public wxPanel
 		DECLARE_EVENT_TABLE()
 };
 
+//----------------------------------------------------------------------
+
+inline void wxStackedImage::clearBackground()
+{
+	m_last=nullptr;
+}
+
+//--------------------------------------------------------------------
+
 inline const wxString& wxStackedImage::getFileName() const
 {
 	return m_pic->getFile();
+}
+
+//----------------------------------------------------------------------
+
+inline void wxStackedImage::highlight(const char* color)
+{
+	if(m_last){
+		m_last->SetBackgroundColour(wxColour("white"));
+	}
+	m_last=this;
+	SetBackgroundColour(wxColour(color));
 }
 
 //====================================================================

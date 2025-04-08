@@ -13,7 +13,6 @@
 * Date:    29-05-2021  (Reviewed 03/2025)                            *
 * Author:  Dan Machado                                               *                                         *
 **********************************************************************/
-
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
@@ -72,7 +71,6 @@ class Scheduler
 		};
 
 		static std::vector<Record> m_records;
-		
 		static std::vector<Worker*> m_workers;
 		
 		static Data* m_currentData;

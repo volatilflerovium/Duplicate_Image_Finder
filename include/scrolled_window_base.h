@@ -35,6 +35,7 @@ class ScrolledWindowBase : public wxScrolledWindow
 
 		virtual void clear();
 		void reduce(std::function<bool(wxPanel* panel)> cbk);
+		void apply(std::function<bool(wxPanel*)> cbk);
 
 	protected:
 		std::list<wxPanel*> m_panelList;
@@ -60,6 +61,17 @@ inline ScrolledWindowBase::ScrolledWindowBase(wxWindow* parent, int width, int m
 inline ScrolledWindowBase::~ScrolledWindowBase()
 {
 	clear();
+}
+
+//----------------------------------------------------------------------
+
+inline void ScrolledWindowBase::apply(std::function<bool(wxPanel*)> cbk)
+{
+	for(wxPanel* panelPtr : m_panelList){
+		if(cbk(panelPtr)){
+			break;
+		}
+	}
 }
 
 //====================================================================

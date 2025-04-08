@@ -113,7 +113,6 @@ void ScrolledWindowBase::updateScroll(int height)
 	int hy=1+std::floor(m_height/stepY);
 
 	SetScrollbars(1, stepY, 0, hy, 0, 0, true);
-	//Scroll(0, hy);
 	Scroll(0, 0);
 }
 

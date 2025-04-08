@@ -23,6 +23,7 @@
 
 #include "directory_scrolled_window.h"
 #include "data_visualization.h"
+#include "opencv_utilities.h"
 
 #include <wx/dir.h>
 #include "utilities/profiler.h"
@@ -42,6 +43,8 @@ static int blockComp(int r)
 	}
 	return result;
 }
+
+//--------------------------------------------------------------------
 
 static wxBitmapBundle mkBitmapBundle(const char* icon)
 {
@@ -143,6 +146,20 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	});
 
 	//----------------------------------------------
+	m_blurFilter=new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+										wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 1);
+
+	ArrayStringType maskMode(4, "");
+	maskMode[ImageProcessor::MaskMode::RectD]="mode 4";//"rect-D";
+	maskMode[ImageProcessor::MaskMode::RectF]="mode 3";//"rect-F";
+	maskMode[ImageProcessor::MaskMode::HashD]="mode 2";//"hash-D";
+	maskMode[ImageProcessor::MaskMode::HashF]="mode 1";//"hash-F";
+
+	m_maskMode=new wxChoice(this, wxID_ANY, wxDefaultPosition,
+											wxDefaultSize, maskMode);
+	m_maskMode->SetSelection(ImageProcessor::MaskMode::HashF);
+
+	//----------------------------------------------
 	// Static Text
 	const int lineHeight=30;
 
@@ -195,6 +212,9 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 
 	// Layout
 	{
+		wxBoxSizer* vbox0 = new wxBoxSizer(wxVERTICAL);
+		vbox0->Add(m_totalFilesText, 1, wxALIGN_CENTER);
+		
 		wxBoxSizer* hbox = new wxBoxSizer(wxHORIZONTAL);
 	
 		hbox->Add(settingsBtn, 0, wxRIGHT, 10);
@@ -203,7 +223,11 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 		hbox->Add(m_rebootBtn, 0, wxRIGHT, 10);
 		hbox->Add(m_addDirPopupBtn, 0, wxRIGHT, 10);
 		hbox->Add(m_staticFiles, 0, wxRIGHT | wxALIGN_CENTER, 10);		
-		hbox->Add(m_totalFilesText, 0, wxRIGHT | wxALIGN_BOTTOM, 10);
+		//hbox->Add(m_totalFilesText, 0, wxRIGHT | wxALIGN_CENTER, 10);
+		hbox->Add(vbox0, 1, wxRIGHT | wxALIGN_BOTTOM, 10);
+
+		hbox->Add(m_maskMode, 0, wxRIGHT, 10);
+		hbox->Add(m_blurFilter, 0, wxRIGHT, 10);
 		hbox->Add(m_sensitivityChoice, 0, wxRIGHT, 10);
 		hbox->Add(m_undoBtn, 0, wxRIGHT, 10);
 		hbox->Add(m_runCancelBtn, 0);
@@ -229,15 +253,22 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	// file and rank labels
 	NotificationModule* m_board=NotificationModule::init(this);
 
-	vBox->Add(m_board, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, c_windowPadding);
-	
+	vBox->Add(m_board, 0, wxEXPAND | wxALL, c_windowPadding);
+
+	Bind(wxEVT_CUSTOM_EVENT, [](wxCommandEvent& event){
+		NotificationModule::setNodes(event.GetString());
+	}, EvtID::NODE_COUNT);
+
+	//-------------------------------------------------
+	Bind(wxEVT_CUSTOM_EVENT, [this](wxCommandEvent& event){
+		m_playStopAnimationBtn->Enable(true);
+	}, EvtID::ANIMATION_READY);
 	//-------------------------------------------------
 
 	setEnable(STATUS::INITIAL);
 
 	this->SetSizerAndFit(vBox);
 	Maximize(true);
-	//Centre();
 }
 
 //----------------------------------------------------------------------
@@ -298,13 +329,10 @@ void DuplicateImgGUI::getImages(const wxString& selectedDir)
 	else if(test==SUBDIR::IS_NEW){
 		m_dirList.push_back(selectedDir.ToStdString());
 	}
-
 	m_currentDir->SetValue(selectedDir);
-
 	int filesInDir=FileManager::crawler(selectedDir.mb_str());
-
 	m_directories->addDirectoryPanel(selectedDir, filesInDir);
-
+	
 	if(FileManager::totalFiles()>0){
 		setEnable(STATUS::LOADED);
 	}
@@ -312,8 +340,12 @@ void DuplicateImgGUI::getImages(const wxString& selectedDir)
 	m_totalFilesText->SetLabel(wxString::Format(wxT("%d"), (int)FileManager::totalFiles()));
 	
 	size_t p=selectedDir.find_last_of("/");
-	m_dirDialog->SetPath(selectedDir.substr(0, p));
-
+	if(p>0){
+		m_dirDialog->SetPath(selectedDir.substr(0, p));
+	}
+	else{
+		m_dirDialog->SetPath(selectedDir);
+	}
 	m_worker->makeHistograms(filesInDir>0);	
 }
 
@@ -365,6 +397,8 @@ void DuplicateImgGUI::setEnable(STATUS status)
 	if(m_status==STATUS::INITIAL){
 		m_rebootBtn->Enable(false);
 		m_addDirPopupBtn->Enable(true);
+		m_blurFilter->Enable(true);
+		m_maskMode->Enable(true);
 		m_sensitivityChoice->Enable(true);
 		m_undoBtn->Enable(false);
 		m_runCancelBtn->Enable(false);
@@ -373,15 +407,20 @@ void DuplicateImgGUI::setEnable(STATUS status)
 	else if(m_status==STATUS::READY){ //processing has finished
 		m_rebootBtn->Enable(true);
 		m_addDirPopupBtn->Enable(false);
+		m_blurFilter->Enable(false);
+		m_maskMode->Enable(false);
 		m_sensitivityChoice->Enable(false);
 		m_undoBtn->Enable(true);
 		m_runCancelBtn->Enable(false);
 			m_runCancelBtn->SetBitmap(m_runBitmapBundle);
-		m_playStopAnimationBtn->Enable(true);
+		//m_playStopAnimationBtn->Enable(true);
+		s_dataViewPtr->transferCompletred();
 	}
 	else if(m_status==STATUS::LOADED){
 		m_rebootBtn->Enable(true);
 		m_addDirPopupBtn->Enable(true);
+		m_blurFilter->Enable(true);
+		m_maskMode->Enable(true);
 		m_sensitivityChoice->Enable(true);
 		m_undoBtn->Enable(false);
 		m_runCancelBtn->Enable(true);
@@ -390,6 +429,8 @@ void DuplicateImgGUI::setEnable(STATUS status)
 	else if(m_status==STATUS::PROCESSING){
 		m_rebootBtn->Enable(false);
 		m_addDirPopupBtn->Enable(false);
+		m_blurFilter->Enable(false);
+		m_maskMode->Enable(false);
 		m_sensitivityChoice->Enable(false);
 		m_undoBtn->Enable(false);
 		m_runCancelBtn->Enable(true);// cancell
@@ -398,6 +439,8 @@ void DuplicateImgGUI::setEnable(STATUS status)
 	else if(m_status==STATUS::CANCELLED){
 		m_rebootBtn->Enable(true);
 		m_addDirPopupBtn->Enable(false);
+		m_blurFilter->Enable(false);
+		m_maskMode->Enable(false);
 		m_sensitivityChoice->Enable(false);
 		m_undoBtn->Enable(true);
 		m_runCancelBtn->Enable(false);
@@ -473,6 +516,8 @@ void DuplicateImgGUI::OnStart(wxCommandEvent & event)
 		NotificationModule::Clear();
 
 		m_progressBar->setUp(FileManager::totalFiles());
+		ImageProcessor::setFilterSize(m_blurFilter->GetValue());
+		ImageProcessor::setMaskMode(static_cast<ImageProcessor::MaskMode>(m_maskMode->GetSelection()));
 		m_worker->processJob();
 	}
 	else	if(m_status==STATUS::PROCESSING){
@@ -514,31 +559,44 @@ void DuplicateImgGUI::OnClear(wxCommandEvent & event)
 
 void DuplicateImgGUI::OnSettings(wxCommandEvent& event)
 {
-	auto settings=SettingsManager::getSettingManager();
+	auto textCtrlBuilder=[](wxWindow* parent, const wxString& val, std::function<void(const wxString&)> cbk)
+	{
+		wxTextCtrl* ctrl=new wxTextCtrl(parent, wxID_ANY, val, 
+								wxDefaultPosition, wxSize(120, -1), wxTE_PROCESS_ENTER);
+
+		ctrl->Bind(wxEVT_TEXT_ENTER, [cbk, ctrl](wxCommandEvent& event){			
+			cbk(ctrl->GetValue());
+			s_dataViewPtr->loadSettings();
+		});
+		
+		return ctrl;
+	};
+	
 	auto settingsPopup=new ExtendedPopup(this, "Settings", true);
 	{
 		wxStaticText* st1 =settingsPopup->builder<wxStaticText>(wxID_ANY, wxT("Node border color: "));
-		auto textCtrl1=settings.NodeBorderColor(settingsPopup, [](){s_dataViewPtr->loadSettings();});
-				
+		auto textCtrl1=textCtrlBuilder(settingsPopup, SettingsManager::getNodeBorderColor(), SettingsManager::setNodeBorderColor);
+
 		wxStaticText* st2 =settingsPopup->builder<wxStaticText>(wxID_ANY, wxT("Node font color: "));
-		auto textCtrl2=settings.NodeFontColor(settingsPopup, [](){s_dataViewPtr->loadSettings();});
+		auto textCtrl2=textCtrlBuilder(settingsPopup, SettingsManager::getNodeFontColor(), SettingsManager::setNodeFontColor);
 
 		wxStaticText* st3 =settingsPopup->builder<wxStaticText>(wxID_ANY, wxT("Edge color: "));
-		auto textCtrl3=settings.EdgesColor(settingsPopup, [](){s_dataViewPtr->loadSettings();});
-		
+		auto textCtrl3=textCtrlBuilder(settingsPopup, SettingsManager::getEdgesColor(), SettingsManager::setEdgesColor);
+
 		//canvas color
 		wxStaticText* st4 =settingsPopup->builder<wxStaticText>(wxID_ANY, wxT("Background color: "));
-		auto textCtrl4=settings.CanvasColor(settingsPopup, [](){s_dataViewPtr->loadSettings();});
+		auto textCtrl4=textCtrlBuilder(settingsPopup, SettingsManager::getCanvasColor(), SettingsManager::setCanvasColor);
 
 		wxStaticText* st5=settingsPopup->builder<wxStaticText>(wxID_ANY, wxT("Node background color: "));
-		auto textCtrl5=settings.NodeBkgColor(settingsPopup, [](){s_dataViewPtr->loadSettings();});
+		auto textCtrl5=textCtrlBuilder(settingsPopup, SettingsManager::getNodeBkgColor(), SettingsManager::setNodeBkgColor);
 
 		wxStaticText* st6=settingsPopup->builder<wxStaticText>(wxID_ANY, wxT("Node selected color: "));
-		auto textCtrl6=settings.NodeSelectedColor(settingsPopup, [](){s_dataViewPtr->loadSettings();});
+		auto textCtrl6=textCtrlBuilder(settingsPopup, SettingsManager::getNodeSelectedColor(), SettingsManager::setNodeSelectedColor);
 
 		wxStaticText* st7=settingsPopup->builder<wxStaticText>(wxID_ANY, wxT("Node width: "));
-		auto textCtrl7=settings.NodeBorderWidth(settingsPopup, [](){s_dataViewPtr->loadSettings();});
-
+		auto textCtrl7=textCtrlBuilder(settingsPopup, wxString::Format("%d", SettingsManager::getNodeBorderWidth()), [](const wxString& val){
+			SettingsManager::setNodeBorderWidth(wxAtoi(val));
+		});
 
 		wxBoxSizer* hbox7 = new wxBoxSizer(wxHORIZONTAL);
 		hbox7->Add(st7, 0, wxCENTER | wxRIGHT, 10);

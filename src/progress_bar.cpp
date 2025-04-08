@@ -24,8 +24,6 @@ ProgressBar::ProgressBar(wxWindow* parent, int width, int height)
 m_range(width), m_height(height), m_position(0),
 m_step(0), m_delta(0.0)
 {
-	//SetMinSize();
-
 	wxColour colour(wxT("#ffffff"));
 	SetBackgroundColour(colour);
 

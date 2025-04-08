@@ -10,7 +10,7 @@
 			margin: 0;
 		}
 
-		#mynetwork 
+		#similarity_network 
 		{
 			width: 100%;
 			border: 0px solid lightgray;
@@ -43,7 +43,171 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 		let nodes_data = new vis.DataSet([]);
 		let edges_data = new vis.DataSet([]);
 
-		let interfaceMod={
+		let SimulationTrotter=(function(){			
+			let a=false;
+			let timeoutRef=-1;
+			
+			function _locFunctionB()
+			{
+				if(a){
+					a=false;
+					network.setOptions({ edges: { smooth: { type: "continuous" } } });
+					network.stopSimulation();
+				}
+			};
+			
+			let b=false;
+			let timeoutIntRef=-1;
+			
+			function _locFunctionC()
+			{
+				const date = new Date();
+				let mins = date.getMinutes();
+				console.log("stop now: "+mins);
+				network.setOptions({ edges: { smooth: { type: "dynamic" } } });
+				network.stopSimulation();
+			}
+			
+			let c=0;
+			let d=false;
+
+			return {
+				stopSimulation:function(){
+					if(!a){
+						a=true;
+						timeoutRef=setTimeout(_locFunctionB, 10*1000);
+					}
+				},
+				
+				cancel:function(){
+					a=false;
+					if(timeoutRef!=-1){
+						clearTimeout(timeoutRef);
+						timeoutRef=-1;
+					}
+					b=false;
+					if(timeoutIntRef!=-1){
+						clearInterval(timeoutIntRef);
+						timeoutIntRef=-1;
+					}
+				},
+
+				trotter:function(){
+					if(d){
+						d=++c<30;
+						if(!d){
+							c=10;
+						}
+						console.log("stopping simulation");
+						network.setOptions({ edges: { smooth: { type: "continuous" } } });
+						network.stopSimulation();
+					}
+					else{
+						console.log("recovering: "+c);
+						d=c--<0;
+						
+					}
+				},
+
+				startOptimisedAnimation:function(){
+					network.setOptions({ edges: { smooth: { type: "continuous" } } });
+					network.startSimulation();
+				},
+
+				startDynamicAnimation:function(){
+					network.setOptions({ edges: { smooth: { type: "dynamic" } } });
+					network.startSimulation();
+				},
+				
+				stopAtIntervals:function(){
+					if(!b){
+						b=true;
+						timeoutIntRef=setInterval(_locFunctionC, 60*1000);
+					}
+				},
+			};
+		})();
+		
+		let interfaceMod;
+		
+		let AnimatedShow={
+			animatedFocus:function(nodeId){
+				network.focus(nodeId, {
+					scale: 2.0,
+					offset: { x: 0, y: 0 },
+					animation: {
+						duration: 1000,
+						easingFunction: "linear",
+					},
+				});
+			},
+
+			animatedFit:function(){
+				network.fit({
+					//offset: { x: 0, y: 0 },
+					animation: {
+						duration: 1000,
+						easingFunction: "linear",
+					},
+				});
+			},
+
+			focusRandom:function(){
+				if(interfaceMod.extraNodes.length>0){
+					let index=Math.floor(Math.random() * interfaceMod.extraNodes.length);
+					let nodeId=interfaceMod.extraNodes[index].id;
+					network.selectNodes([nodeId], true);
+					this.animatedFocus(nodeId);
+				}
+			},
+
+			animatedShowTimeout:-1,
+			showInProgress:false,
+			showPhase:0,
+
+			reset:function(){
+				if(this.animatedShowTimeout!=-1){
+					this.showInProgress=false;
+					clearTimeout(this.animatedShowTimeout);
+					this.animatedShowTimeout=-1;					
+					this.showPhase=0;
+					this.animatedFit();
+					network.unselectAll();
+					return;
+				}
+			},
+
+			animatedShow:function(){
+				if(this.animatedShowTimeout!=-1){
+					this.reset();
+					return;
+				}
+				network.unselectAll();
+				network.fit();
+
+				setTimeout(function(){AnimatedShow.doTheShow();}, 500);
+				this.showInProgress=true;
+			},
+
+			doTheShow:function(){
+				if(!this.showInProgress){
+					return;
+				}
+
+				if(this.showPhase==0) {
+					this.focusRandom();
+				}
+				else{
+					this.animatedFit();
+				}
+				//both animations take 1sec each, so we need to account for it
+				let timeout=4100-3000*this.showPhase;
+				this.animatedShowTimeout=setTimeout(function(){AnimatedShow.doTheShow();}, timeout);
+				this.showPhase=1-this.showPhase;
+			},
+		};
+
+		interfaceMod={
 			nodeIdx:0,
 			extraNodes:[],
 			edgeIdx:0,
@@ -51,15 +215,23 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 			timeOut:200,
 			stopLoading:false,
 			loadingTimeout:null,
-			optimizingInterval:null,
+			isLoading:false,
+			allNodesSent:false,
 
 			reset:function(){
+				
+				SimulationTrotter.cancel();
+				SimulationTrotter.startDynamicAnimation();// reset edges: { smooth: { type: "dynamic" } } 	
+				AnimatedShow.reset();
+
 				if(interfaceMod.extraNodes.length==0 && interfaceMod.extraEdges.length==0){
 					return;
 				}
-
-				clearInterval(this.optimizingInterval);
-				this.optimizingInterval=null;
+				
+				if(this.animatedShowTimeout!=-1){
+					clearTimeout(this.animatedShowTimeout);
+					this.animatedShowTimeout=-1;
+				}
 
 				this.stopLoading=true;
 				clearTimeout(this.loadingTimeout);
@@ -79,19 +251,24 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 				this.isLoading=false;
 				this.edgeIdx=0;
 				this.extraEdges=[];
-				this.enableSmoothCurves();
 				this.stopLoading=false;
 				this.loadingTimeout=null;
-				this.opt=0;
-				this.fitAnimated();
+				this.allNodesSent=false;
 			},
-			isLoading:false,
 
 			addNode:function(node){
 				this.extraNodes.push(node);
 				if(!this.isLoading){
 					this.isLoading=true;
 					this.loadingTimeout=setTimeout(function(){interfaceMod.loadData();}, 250);
+				}
+			},
+
+			transferDone:function(totalNodes){
+				this.allNodesSent=true;
+				if(totalNodes==interfaceMod.extraNodes.length){
+					window.wx_msg.postMessage("OK");
+					AnimatedShow.animatedFit();
 				}
 			},
 
@@ -102,57 +279,51 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 					this.loadingTimeout=setTimeout(function(){interfaceMod.loadData();}, 250);
 				}
 			},
-			fitTimer:-1,
-			opt:0,
+
 			loadData:function(){
 				if(this.stopLoading){
 					return;
 				}
+
+				let nId=0;
+
 				if(this.nodeIdx<interfaceMod.extraNodes.length){
+					nId=this.extraNodes[this.nodeIdx].id;
 					nodes_data.add(this.extraNodes[this.nodeIdx++]);
 				}
 
-				if(this.edgeIdx<interfaceMod.extraEdges.length){
+				while(this.edgeIdx<interfaceMod.extraEdges.length && this.extraEdges[this.edgeIdx].from<=nId){
 					edges_data.add(this.extraEdges[this.edgeIdx++]);
 				}
 
-				if(this.nodeIdx<interfaceMod.extraNodes.length || this.edgeIdx<interfaceMod.extraEdges.length){
+				if(interfaceMod.extraEdges.length>200){
+					SimulationTrotter.trotter();
+				}
+
+				if(this.nodeIdx<interfaceMod.extraNodes.length){
+					//console.log(this.nodeIdx+"<"+interfaceMod.extraNodes.length+" :: "+this.edgeIdx+"<"+interfaceMod.extraEdges.length);
 					this.loadingTimeout=setTimeout(function(){interfaceMod.loadData();}, 100);
-				
-					/*if(this.fitTimer==-1){
-						this.fitTimer=setInterval(function(){interfaceMod.fitAnimated();}, 5000);
-					}// */
 				}
 				else{
-					//this.fitAnimated();
-					//clearTimeout(this.fitTimer);
-					//this.fitTimer=-1;
+					SimulationTrotter.startDynamicAnimation();
+
+					if(interfaceMod.extraEdges.length>200){
+						SimulationTrotter.stopAtIntervals();
+					}
+					
+					if(this.allNodesSent){
+						window.wx_msg.postMessage("OK");
+						AnimatedShow.animatedFit();
+					}
 					
 					this.isLoading=false;
 					this.loadingTimeout=null;
-					
-					if(interfaceMod.extraEdges.length>100){
-						if(this.opt==0){
-							this.opt=1;
-							this.optimizingInterval=setInterval(function(){interfaceMod.optimized();}, 1*60*1000);
-						}
-					}
 				}
 			},
 
 			removeNode:function(nodeId){
 				if(nodeId<=this.nodeIdx){
 					network.selectNodes([nodeId], true);
-					
-					/*edgesToRemove=network.getSelectedEdges();
-					for(let i=0; i<edgesToRemove.length; i++){
-						for(let j=0; j<this.extraEdges.length; j++){
-							if(this.extraEdges[j].id==edgesToRemove[i]){
-								this.extraEdges.splice(j, 1);
-								break;
-							}
-						}
-					}//*/
 					
 					for(let j=0; j<this.extraNodes.length; j++){
 						if(this.extraNodes[j].id==nodeId){
@@ -165,6 +336,15 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 				}
 			},
 
+			findNodeById:function(nodeId){
+				for(let j=0; j<this.extraNodes.length; j++){
+					if(this.extraNodes[j].id==nodeId){
+						return this.extraNodes[j];
+					}
+				}
+				return null;
+			},
+
 			unselectNode:function(){
 				network.unselectAll();
 			},
@@ -173,10 +353,6 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 				if(nodeId<=this.nodeIdx){
 					network.selectNodes([nodeId], true);
 				}
-			},
-
-			setBackgroundColour:function(htmlColour){
-				document.getElementById("mynetwork").style.backgroundColor=htmlColour;
 			},
 			
 			focusOnNode:function(nodeId){
@@ -195,94 +371,6 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 				network.selectNodes([nodeId], true);
 			},
 
-			fitAnimated:function(){
-				const animationOptions={
-					offset: { x: 0, y: 0 },
-					animation: {
-						duration: 1000,
-						easingFunction: "linear",
-					},
-				};
-				network.fit(animationOptions);
-			},
-
-			animationOptions:(function(){
-				let options={
-					scale: 2.0,
-					offset: { x: 0, y: 0 },
-					animation: {
-						duration: 1000,
-						easingFunction: "linear",
-					},
-				};
-				return options;
-			})(),
-
-			focusRandom:function(){
-				if(interfaceMod.extraNodes.length>0){
-					let index=Math.floor(Math.random() * interfaceMod.extraNodes.length);
-					let nodeId=interfaceMod.extraNodes[index].id;
-					network.focus(nodeId, this.animationOptions);
-					network.selectNodes([nodeId], true);
-				}
-			},
-
-			showInterval:false,
-			showPhase:0,
-			showMessage:true,
-			startShow:function(a){
-				if(this.isLoading){
-					if(this.showMassage){
-						this.showMassage=false;
-						alert("Animation will start when all the images are loaded.");
-					}
-					setTimeout(function(){interfaceMod.startShow();}, 500);
-					return;
-				}
-				this.showMassage=true;
-				if(this.showInterval){
-					network.unselectAll();
-					network.fit();
-				}
-				else{
-					setTimeout(function(){interfaceMod.doTheShow();}, 500);
-				}
-				this.showInterval=!this.showInterval;
-			},
-		
-			doTheShow:function(){
-				if(this.showInterval){
-					if(this.showPhase==0) {
-						this.focusRandom();
-					}
-					else{
-						this.fitAnimated();
-					}
-					let timeout=3000-this.showPhase*2000;
-					setTimeout(function(){interfaceMod.doTheShow();}, timeout);
-					this.showPhase=1-this.showPhase;
-				}
-			},
-
-			optimized:function(){//disableSmoothCurves() {
-					const d = new Date();
-					let mins = d.getMinutes();
-					console.log("Optimizing now: "+mins+" "+interfaceMod.edgeIdx);
-				if(interfaceMod.extraEdges.length>100){
-					if(interfaceMod.extraEdges.length==interfaceMod.edgeIdx){
-						console.log("optimizing: "+interfaceMod.extraEdges.length);
-						network.setOptions({ edges: { smooth: { type: "continuous" } } });
-						network.stopSimulation();
-					}
-				}
-			},
-
-			//normal
-			enableSmoothCurves:function(){
-				network.setOptions({ edges: { smooth: { type: "dynamic" } } });
-				network.startSimulation();
-			},
-
 			setSettings:function(bWidth, nodesColorBorder, nodesBkgColor, nodesSelectedColor, nodesFontColor, edgesColor, canvasColor){
 				network.setOptions({
 						nodes: 
@@ -299,18 +387,13 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 						},
 						edges: {color: edgesColor},
 					});
-				document.getElementById("mynetwork").style.backgroundColor=canvasColor;
+				document.getElementById("similarity_network").style.backgroundColor=canvasColor;
 			},
-			
 		};
 
-		//==============================================================
-
-      // Called when the Visualization API is loaded.
 		function resize()
 		{
-			document.getElementById("mynetwork").style.height =window.innerHeight+'px';
-			
+			document.getElementById("similarity_network").style.height =window.innerHeight+'px';
 		}
 
 		function draw() 
@@ -318,7 +401,7 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 			resize();
 
 			// create a network
-			let container = document.getElementById("mynetwork");
+			let container = document.getElementById("similarity_network");
 
 			let data = {
 				nodes: nodes_data,
@@ -354,110 +437,48 @@ div.vis-navigation div.vis-button.vis-right{background-image:url("data:image/png
 					navigationButtons: true,
 					keyboard: true,
 				},
-				//=================
-				//=================
-				//version 1. not work as expected
-				/*
-				physics: {
-					stabilization: {
-						enabled: true,
-						iterations: 180, // maximum number of iteration to stabilize
-						updateInterval: 10,
-						onlyDynamicEdges: false,
-						fit: true
-					},
-				},// */
-				//=================
-				//=================
-				// version 2:
+
 				physics:{
 					/*
-					barnesHut:{
-						gravitationalConstant: -10000,
-						springConstant:0.02,
-						damping: 0.2,
-					},//*/
-					/*
-					forceAtlas2Based: { // good
+					"barnesHut": {
+						"gravitationalConstant": -10000,
+						"damping": 0.1
+					},*/
+
+					forceAtlas2Based: {
 						theta: 0.5,
-						gravitationalConstant: -100,//-50,
-						centralGravity: 0.10,// 0.05,//0.01,
+						gravitationalConstant: -70,
+						centralGravity: 0.05,
 						springConstant: 0.08,
-						springLength: 300, //100,
-						damping: 0.8, // 0.4,
+						springLength: 300,
+						damping: 0.6,
 						avoidOverlap: 0
-					 },// */
-					//----------------------------
-					//----------------------------
-					/*
-					barnesHut: {
-						theta: 0.5,
-						gravitationalConstant: -6000,
-						centralGravity: 0.3,
-						springLength: 95,
-						springConstant: 0.04,
-						damping: 0.2,// 0.09,
-						avoidOverlap: 0
-					 },// */
-					 //*
-					 forceAtlas2Based: { // good
-						theta: 0.5,
-						gravitationalConstant: -70,//-50,
-						centralGravity: 0.05,//0.01,
-						springConstant: 0.08,
-						springLength: 300, //100,
-						damping: 0.6, // 0.4,
-						avoidOverlap: 0
-					 },// */
-					 /*
-					 repulsion: {
-						centralGravity: 0.2,
-						springLength: 200,
-						springConstant: 0.05,
-						nodeDistance: 100,
-						damping: 0.09
-					 },//*/
-					 /*
-					 hierarchicalRepulsion: { // this is ok
-						centralGravity: 0.0,
-						springLength: 100,
-						springConstant: 0.01,
-						nodeDistance: 120,
-						damping: 0.09,
-						avoidOverlap: 0
-					 },// */
-					//----------------------------
-					//----------------------------
+					 },
 					
 					stabilization: {
 						enabled: true,
 						iterations: 200,//180, // maximum number of iteration to stabilize
-						updateInterval: 10,
+						updateInterval: 50,
 						onlyDynamicEdges: false,
 						fit: true
 					},
 				},
-				//smoothCurves: {dynamic:false},
-				//hideEdgesOnDrag: true,
-				//stabilize: true,
-				//stabilizationIterations: 1000,
-				//zoomExtentOnStabilize: true,
-				//navigation: true,
-				//keyboard: true,
-				
-				//=================
-				//=================
-				
 			};
 
 			network = new vis.Network(container, data, options);
+			
+			network.on("doubleClick", function (params) {
+				window.wx_msg.postMessage(interfaceMod.findNodeById(params.nodes[0]).image);
+			});
+			
+			network.setOptions({ edges: { smooth: { type: "continuous" } } });
 		}
 	</script>
 	<script type="text/javascript" src="/tmp/.DuplicatedImgNetworkData.js"></script>
 
 </head>
 <body onload="draw(); loadSettings()" onresize="resize()">
-	<div id="mynetwork">
+	<div id="similarity_network">
 		<div class="vis-network" tabindex="0" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; dheight: 100%;">
 			<canvas style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; dheight: 100%;" widthd="163" heightd="1163">
 			</canvas>
