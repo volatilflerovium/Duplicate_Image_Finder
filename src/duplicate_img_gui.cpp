@@ -133,7 +133,7 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 		 * auto startBtn = m_directoriesPopup->builder<wxButton>(WX::START_FROM_POPUP, wxT("Start"));
 		 * Connect(WX::START_FROM_POPUP, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(DuplicateImgGUI::OnStart));
 		*/
-		vBox->Add(m_directories, 1, wxEXPAND | wxBOTTOM, 10);
+		vBox->Add(m_directories, 0, wxEXPAND | wxBOTTOM, 10);
 		vBox->Add(startBtn, 0, wxALIGN_RIGHT);
 
 		m_directoriesPopup->setSizer(vBox);
@@ -234,6 +234,7 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 
 		vBox->Add(hbox, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, c_windowPadding);
 	}
+
 	//-------------------------------------------------
 	//progress bar
 
@@ -241,7 +242,7 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 	m_progressBar->setProgress(0);
 
 	vBox->Add(m_progressBar, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, c_windowPadding);// element will expand...and it will pass extra space to its childs
-	
+
 	//-------------------------------------------------
 	//picture viewer
 
@@ -371,16 +372,17 @@ void DuplicateImgGUI::btnEnaDis(wxButton* btn, bool enable)
 
 //----------------------------------------------------------------------
 
-void DuplicateImgGUI::setEnable(int stateFlag)
+void DuplicateImgGUI::setEnable(int status)
 {
-	/*
-	m_rebootBtn->Enable(REBOOOT  & stateFlag);
-	m_addDirPopupBtn->Enable(ADD_DIRECTORY & stateFlag);
-	m_sensitivityChoice->Enable(SENSITIVITY & stateFlag);
-	m_undoBtn->Enable(UNDO & stateFlag);
-	m_runCancelBtn->Enable(RUN_CANCEL & stateFlag);
-	m_playStopAnimationBtn->Enable(PLAY_STOP & stateFlag);
-	// */
+	m_rebootBtn->Enable(BTNS_ID::REBOOT  & status);
+	m_addDirPopupBtn->Enable(BTNS_ID::ADD_DIRECTORY & status);
+	
+	m_blurFilter->Enable(BTNS_ID::SENSITIVITY_LEVEL & status);
+	m_maskMode->Enable(BTNS_ID::SENSITIVITY_LEVEL & status);
+	m_sensitivityChoice->Enable(BTNS_ID::SENSITIVITY_LEVEL & status);
+	m_undoBtn->Enable(BTNS_ID::UNDO & status);
+	m_runCancelBtn->Enable(BTNS_ID::CANCEL & status);
+	m_playStopAnimationBtn->Enable(BTNS_ID::PLAY_STOP & status);
 }
 
 void DuplicateImgGUI::setEnable(STATUS status)
@@ -394,57 +396,23 @@ void DuplicateImgGUI::setEnable(STATUS status)
 		m_playStopAnimationBtn->SetBitmap(m_startAnimationBitmapBundle);
 	}
 
+	setEnable(static_cast<int>(m_status));
+
 	if(m_status==STATUS::INITIAL){
-		m_rebootBtn->Enable(false);
-		m_addDirPopupBtn->Enable(true);
-		m_blurFilter->Enable(true);
-		m_maskMode->Enable(true);
-		m_sensitivityChoice->Enable(true);
-		m_undoBtn->Enable(false);
-		m_runCancelBtn->Enable(false);
-			m_runCancelBtn->SetBitmap(m_runBitmapBundle);
-	}
-	else if(m_status==STATUS::READY){ //processing has finished
-		m_rebootBtn->Enable(true);
-		m_addDirPopupBtn->Enable(false);
-		m_blurFilter->Enable(false);
-		m_maskMode->Enable(false);
-		m_sensitivityChoice->Enable(false);
-		m_undoBtn->Enable(true);
-		m_runCancelBtn->Enable(false);
-			m_runCancelBtn->SetBitmap(m_runBitmapBundle);
-		//m_playStopAnimationBtn->Enable(true);
-		s_dataViewPtr->transferCompletred();
+		m_runCancelBtn->SetBitmap(m_runBitmapBundle);
 	}
 	else if(m_status==STATUS::LOADED){
-		m_rebootBtn->Enable(true);
-		m_addDirPopupBtn->Enable(true);
-		m_blurFilter->Enable(true);
-		m_maskMode->Enable(true);
-		m_sensitivityChoice->Enable(true);
-		m_undoBtn->Enable(false);
-		m_runCancelBtn->Enable(true);
-			m_runCancelBtn->SetBitmap(m_runBitmapBundle);
+		m_runCancelBtn->SetBitmap(m_runBitmapBundle);
 	}
 	else if(m_status==STATUS::PROCESSING){
-		m_rebootBtn->Enable(false);
-		m_addDirPopupBtn->Enable(false);
-		m_blurFilter->Enable(false);
-		m_maskMode->Enable(false);
-		m_sensitivityChoice->Enable(false);
-		m_undoBtn->Enable(false);
-		m_runCancelBtn->Enable(true);// cancell
-			m_runCancelBtn->SetBitmap(m_cancellBitmapBundle);
+		m_runCancelBtn->SetBitmap(m_cancellBitmapBundle);
+	}
+	else if(m_status==STATUS::READY){ //processing has finished
+		m_runCancelBtn->SetBitmap(m_runBitmapBundle);
+		s_dataViewPtr->transferCompleted();
 	}
 	else if(m_status==STATUS::CANCELLED){
-		m_rebootBtn->Enable(true);
-		m_addDirPopupBtn->Enable(false);
-		m_blurFilter->Enable(false);
-		m_maskMode->Enable(false);
-		m_sensitivityChoice->Enable(false);
-		m_undoBtn->Enable(true);
-		m_runCancelBtn->Enable(false);
-			m_runCancelBtn->SetBitmap(m_cancelledBitmapBundle);
+		m_runCancelBtn->SetBitmap(m_cancelledBitmapBundle);
 	}
 }
 

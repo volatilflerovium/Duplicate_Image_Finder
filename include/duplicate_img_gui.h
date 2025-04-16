@@ -24,22 +24,6 @@
 #include <wx/dirdlg.h>
 #include <wx/spinctrl.h>
 
-#if 0
-#define REBOOOT           1     // m_rebootBtn
-#define ADD_DIRECTORY     1<<1 // m_addDirPopupBtn
-#define SENSITIVITY_LEVEL 1<<2 // m_sensitivityChoice
-#define UNDO              1<<3 // m_undoBtn
-#define CANCEL            1<<4 // m_runCancelBtn
-#define PLAY_STOP         1<<5 // m_playStopAnimationBtn
-
-//states
-#define INITIAL    ADD_DIRECTORY | SENSITIVITY_LEVEL
-#define READY      REBOOOT | UNDO | PLAY_STOP
-#define LOADED     REBOOOT | ADD_DIRECTORY | SENSITIVITY_LEVEL | RUN_CANCEL
-#define PROCESSING  RUN_CANCEL
-#define CANCELLED   REBOOOT | UNDO
-#endif
-
 //====================================================================
 
 enum SENSITIVITY
@@ -49,8 +33,21 @@ enum SENSITIVITY
 	HIGH=8,
 };
 
+enum BTNS_ID
+{
+	REBOOT=1,               // m_rebootBtn
+	ADD_DIRECTORY=1<<1,     // m_addDirPopupBtn
+	SENSITIVITY_LEVEL=1<<2, // m_sensitivityChoice
+	UNDO=1<<3,              // m_undoBtn
+	CANCEL=1<<4,            // m_runCancelBtn
+	PLAY_STOP=1<<5,         // m_playStopAnimationBtn
+};
+
+//====================================================================
+
 class ExtendedPopup;
 class DirectoryScrolledWindow;
+
 class DuplicateImgGUI : public wxFrame
 {
 	public:
@@ -93,11 +90,11 @@ class DuplicateImgGUI : public wxFrame
 
 		enum class STATUS
 		{
-			INITIAL,
-			READY,
-			LOADED,
-			PROCESSING,
-			CANCELLED,
+			INITIAL=BTNS_ID::ADD_DIRECTORY | BTNS_ID::SENSITIVITY_LEVEL,
+			READY=BTNS_ID::REBOOT | BTNS_ID::UNDO | BTNS_ID::PLAY_STOP,
+			LOADED=BTNS_ID::REBOOT | BTNS_ID::ADD_DIRECTORY | BTNS_ID::SENSITIVITY_LEVEL | BTNS_ID::CANCEL,
+			PROCESSING=BTNS_ID::CANCEL,
+			CANCELLED=BTNS_ID::REBOOT | BTNS_ID::UNDO,
 		} m_status;
 
 		const SENSITIVITY m_initialSensitivity;

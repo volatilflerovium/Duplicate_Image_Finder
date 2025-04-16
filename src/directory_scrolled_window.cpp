@@ -23,6 +23,8 @@
 
 #include <wx/msgdlg.h>
 
+#include "utilities/debug_utils.h"
+
 //====================================================================
 
 DirectoryPanel::DirectoryPanel(wxWindow* parent, uint posY, uint width, const wxString& fileName, const wxString& data)
@@ -65,7 +67,6 @@ END_EVENT_TABLE()
 void DirectoryScrolledWindow::addDirectoryPanel(const wxString& fileName, const wxString& data)
 {
 	DirectoryPanel* filePanel=new DirectoryPanel(this, m_height, m_width, fileName, data);
-	
 	addPanel(filePanel);
 }
 

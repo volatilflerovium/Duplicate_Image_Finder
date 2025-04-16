@@ -33,9 +33,8 @@ PictureViewer::PictureViewer(wxWindow* parent)
 :wxPanel(parent)
 {
 	SetMinSize(wxSize(WX::MIN_WIDTH, c_scrollerMinHeight));
-	
+
 	m_dataViewPtr=new DataView(this, wxSize(WX::MIN_WIDTH-(10+c_scrollerWidth), c_scrollerMinHeight));
-	
 	s_dataViewPtr=m_dataViewPtr;
 	
 	m_scroller=new ImageScrolledPanel(this, -1, c_scrollerWidth);

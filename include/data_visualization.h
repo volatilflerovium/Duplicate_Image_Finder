@@ -38,7 +38,7 @@ class DataView : public wxPanel
 		void selectNode(const std::string& filePath);
 		void removeNode(const std::string& filePath);
 		void unselectNode();
-		void transferCompletred();
+		void transferCompleted();
 		void startAnimation();
 
 	private:
@@ -118,7 +118,7 @@ inline void DataView::removeNode(const std::string& filePath)
 
 //--------------------------------------------------------------------
 
-inline void DataView::transferCompletred()
+inline void DataView::transferCompleted()
 {
 	wxString jsCode=wxString::Format("interfaceMod.transferDone(%d);", m_nodeCounter);
 	m_webViewPtr->RunScript(jsCode);
