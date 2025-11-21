@@ -6,6 +6,7 @@ as [AppImage](https://appimage.org/) that can find duplicated images.
 ## Content
 - [Overview](#overview)
 - [AppImage](#appimage)
+	- [Desktop Integration](#desktop-integration) 
 - [Supported Files](#supported-files)
 - [The Power of the Humble Histogram](#the-power-of-the-humble-histogram)
 - [Quick Start](#quick-start)
@@ -36,6 +37,32 @@ Download it, make it executable, and run! No need to install.
 No system libraries or system preferences are altered.
 Most AppImages run on recent versions of Arch Linux, CentOS, Debian, Fedora,
 openSUSE, Red Hat, Ubuntu, and other common desktop distributions.
+
+### Desktop Integration
+
+This is totally optional.
+
+Creating desktop entries for Duplicate_Image_Finder ensures quick access
+from the Application menu. For this, Duplicate_Image_Finder's autoinstallation
+will create desktop file with the following content
+
+```
+[Desktop Entry]
+Type=Application
+Name=wxDuplicated Image Finder
+Exec=wxDuplicatedImageFinder
+Icon=wxduplicatedimageapp
+Categories=Graphics;
+```
+
+and save it in ~/.local/share/applications/ It also will create the directory
+~/bin/appimages/wxDuplicatedImageApp and move the appimage there. After this 
+you will be able to see wxDuplicate_Image_Finder listed in the Application 
+menu under Graphics.
+
+To uninstall it, delete the directory ~/bin/appimages/wxDuplicatedImageApp 
+and the file ~/.local/share/applications/wxDuplicatedImageApp.desktop
+
 
 ## Supported Files
 
