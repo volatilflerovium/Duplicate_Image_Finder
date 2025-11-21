@@ -26,10 +26,7 @@
 #include "opencv_utilities.h"
 
 #include <wx/dir.h>
-#include "utilities/profiler.h"
-#include "utilities/debug_utils.h"
-
-Profiler<std::chrono::milliseconds> s_profiler;
+#include <wx/icon.h>
 
 extern DataView* s_dataViewPtr;
 
@@ -82,6 +79,10 @@ DuplicateImgGUI::DuplicateImgGUI(const wxString& title)
 , m_initialSensitivity(SENSITIVITY::MEDIUM)
 , m_animationRunning(false)
 {
+	auto icon=wxIcon();
+	icon.LoadFile(FileManager::iconsPath().append("/wxduplicatedimageapp.png"));
+	SetIcon(icon);
+
 	wxInitAllImageHandlers();
 
 	FileManager::init();
@@ -566,6 +567,23 @@ void DuplicateImgGUI::OnSettings(wxCommandEvent& event)
 			SettingsManager::setNodeBorderWidth(wxAtoi(val));
 		});
 
+		wxCheckBox* checkBox=nullptr;
+
+		if(isAppInstalled()){
+			checkBox=settingsPopup->builder<wxCheckBox>(wxID_ANY, wxT("Installed"),
+					wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+			checkBox->SetValue(true);
+			checkBox->Disable();
+		}
+		else{
+			checkBox=settingsPopup->builder<wxCheckBox>(wxID_ANY, wxT("Install"),
+					wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+			checkBox->Bind(wxEVT_CHECKBOX, [this, settingsPopup](wxCommandEvent& event){
+				settingsPopup->Dismiss();
+				autoInstall();
+			});
+		}
+
 		wxBoxSizer* hbox7 = new wxBoxSizer(wxHORIZONTAL);
 		hbox7->Add(st7, 0, wxCENTER | wxRIGHT, 10);
 		hbox7->Add(textCtrl7, 0, wxEXPAND);
@@ -594,6 +612,9 @@ void DuplicateImgGUI::OnSettings(wxCommandEvent& event)
 		hbox4->Add(st4, 0, wxCENTER | wxRIGHT, 10);
 		hbox4->Add(textCtrl4, 0);
 
+		wxBoxSizer* hbox8 = new wxBoxSizer(wxHORIZONTAL);
+		hbox8->Add(checkBox, 0, wxCENTER | wxLEFT, 10);
+
 		wxBoxSizer* vBox = new wxBoxSizer(wxVERTICAL);
 		//vBox->SetMinSize(400, 10);
 		vBox->Add(hbox7, 0, wxALIGN_RIGHT | wxBOTTOM, 10);
@@ -602,11 +623,98 @@ void DuplicateImgGUI::OnSettings(wxCommandEvent& event)
 		vBox->Add(hbox6, 0, wxALIGN_RIGHT | wxBOTTOM, 10);
 		vBox->Add(hbox2, 0, wxALIGN_RIGHT | wxBOTTOM, 10);
 		vBox->Add(hbox3, 0, wxALIGN_RIGHT | wxBOTTOM, 10);
-		vBox->Add(hbox4, 0, wxALIGN_RIGHT);
+		vBox->Add(hbox4, 0, wxALIGN_RIGHT | wxBOTTOM, 10);
+		vBox->Add(hbox8, 0, wxALIGN_RIGHT);
 
 		settingsPopup->setSizer(vBox);
 	}
 	settingsPopup->Popup();
+}
+
+//----------------------------------------------------------------------
+
+void DuplicateImgGUI::autoInstall()
+{
+	#ifndef DEBUG
+		const wxString desktopEntryFile=wxString::Format("%s/.local/share/applications/wxDuplicatedImageApp.desktop", getenv("HOME")); 
+		const wxString appInstallationDir=wxString::Format("%s/bin/appimages/wxDuplicatedImageApp", getenv("HOME")); 
+	#else
+		const wxString desktopEntryFile="/tmp/wxduplicatedimageapp.desktop";
+		const wxString appInstallationDir="/tmp/bin/wxDuplicatedImageApp";
+	#endif
+
+	#ifndef DEBUG
+	
+	auto saveDataDialog=wxMessageDialog(
+		this,
+		wxT("Do you want to create a desktop file entry?"),
+		wxT("Install"),
+		wxYES_NO|wxCENTRE|wxICON_WARNING
+	);
+
+	int response=saveDataDialog.ShowModal();
+	if(wxID_YES==response){
+		std::string appImagePath=getenv("APPIMAGE");
+		std::string appimageName=appImagePath.substr(appImagePath.find_last_of("/")+1);
+
+		std::error_code ec;
+		if(!std::filesystem::exists(std::string(appInstallationDir), ec)){
+			std::filesystem::create_directories(std::string(appInstallationDir), ec);
+		}
+
+		const char* command="[Desktop Entry]\n\
+Name=wxDuplicated Image Finder\n\
+Comment=Graphical tool for find duplicated and simillar images in a collection.\n\
+Terminal=false\n\
+Type=Application\n\
+Exec=%s/%s\n\
+Icon=%s/wxduplicatedimageapp.png\n\
+Categories=Graphics;";
+
+		wxString fileContent=wxString::Format(command, appInstallationDir, appimageName, appInstallationDir);
+
+		std::fstream fileStream(desktopEntryFile.mb_str(), std::ios::out | std::ios::trunc);
+		if(fileStream.is_open()){
+			fileStream<<fileContent;
+			fileStream.close();
+		}
+
+		std::string srcFilePath=std::string(wxString::Format("%s/%s", getenv("OWD"), appimageName).mb_str());
+		std::string dstFilePath=std::string(wxString::Format("%s/%s", appInstallationDir, appimageName).mb_str());
+
+		std::filesystem::rename(srcFilePath, dstFilePath, ec);
+		
+		srcFilePath=std::string(wxString::Format("%s/wxduplicatedimageapp.png", getenv("APPDIR")).mb_str());
+		dstFilePath=std::string(wxString::Format("%s/wxduplicatedimageapp.png", appInstallationDir).mb_str());
+		std::filesystem::copy_file(srcFilePath, dstFilePath, std::filesystem::copy_options::overwrite_existing, ec);
+	}
+
+	#endif
+}
+
+//----------------------------------------------------------------------
+
+bool DuplicateImgGUI::isAppInstalled()
+{
+	#ifndef DEBUG
+		const std::string desktopEntryFile=std::string(wxString::Format("%s/.local/share/applications/wxDuplicatedImageApp.desktop", getenv("HOME")).mb_str()); 
+
+		std::error_code ec;
+		if(std::filesystem::exists(desktopEntryFile, ec)){
+			const wxString appInstallationDir=wxString::Format("%s/bin/appimages/wxDuplicatedImageApp", getenv("HOME")); 
+
+			std::string appImagePath=getenv("APPIMAGE");
+			std::string appimageName=appImagePath.substr(appImagePath.find_last_of("/")+1);
+
+			std::string appFile=std::string(wxString::Format("%s/%s", appInstallationDir, appimageName).mb_str());
+			if(std::filesystem::exists(appFile, ec)){
+				return true;
+			}
+		}
+		return false;
+
+	#endif
+	return true;
 }
 
 //----------------------------------------------------------------------

@@ -18,8 +18,6 @@
 #include "file_manager.h"
 #include "cstr_split.h"
 
-#include "utilities/debug_utils.h"
-
 #include <fstream>
 
 //====================================================================
@@ -51,6 +49,7 @@ SettingsManager::SettingsManager()
 					m_chunkL=std::atoi(parts[7]);
 					m_chunkR=std::atoi(parts[8]);
 					m_resume=std::atoi(parts[9]);
+					m_isInstalled=static_cast<bool>(std::atoi(parts[10]));
 				break;
 			}
 			catch(...)
@@ -84,7 +83,8 @@ SettingsManager::~SettingsManager()
 		<<m_borderWidth<<":"
 		<<m_chunkL<<":"
 		<<m_chunkR<<":"
-		<<m_resume<<"::::\n";
+		<<m_resume<<":"
+		<<static_cast<int>(m_isInstalled)<<":::\n";
 
 		fileData.close();
 	}

@@ -17,8 +17,6 @@
 #define _DATA_VISUALZATION_H
 #include "file_manager.h"
 
-#include "utilities/debug_utils.h"
-
 #include <wx/wx.h>
 #include <wx/webview.h>
 

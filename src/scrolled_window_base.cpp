@@ -16,8 +16,6 @@
 #include "scrolled_window_base.h"
 #include <wx/panel.h>
 
-#include "utilities/debug_utils.h"
-
 //====================================================================
 
 void ScrolledWindowBase::addPanel(wxPanel* panel)

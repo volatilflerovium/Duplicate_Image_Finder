@@ -15,11 +15,10 @@
 **********************************************************************/
 #ifndef SCROLLED_WINDOW_BASE_H
 #define SCROLLED_WINDOW_BASE_H
-
-#include <wx/scrolwin.h>
-
 #include <list>
 #include <functional>
+
+#include <wx/scrolwin.h>
 
 //====================================================================
 

@@ -18,7 +18,6 @@
 #include "wx_constants.h"
 #include "picture_viewer.h"
 #include "event_definitions.h"
-
 #include "data_visualization.h"
 
 extern DataView* s_dataViewPtr;
@@ -81,9 +80,10 @@ void wxStackedImage::OnRightClick(wxCommandEvent& event)
 
 void wxStackedImage::OnOpenImg(wxCommandEvent& event)
 {
-	std::string str("xdg-open ");
-	str.append(m_pic->getFile().ToStdString());
-	system(str.c_str());
+	std::string picCmd("xdg-open \"");
+	picCmd.append(m_pic->getFile().ToStdString());
+	picCmd.append("\"");
+	system(picCmd.c_str());
 }
 
 //----------------------------------------------------------------------
@@ -102,7 +102,6 @@ void wxStackedImage::OnDeleteImg(wxCommandEvent& event)
 	if(wxID_OK==removePicDialog.ShowModal()){	
 		wxCommandEvent event(wxEVT_CUSTOM_EVENT, EvtID::DELETE_IMG);
 		event.SetString(m_pic->getFile());
-		//GetEventHandler()->AddPendingEvent(event);
 		wxPostEvent(this, event);
 	}
 }

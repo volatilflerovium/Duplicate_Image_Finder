@@ -21,8 +21,6 @@
 #include "data_visualization.h"
 #include "event_definitions.h"
 
-#include "utilities/debug_utils.h"
-
 #include <wx/sizer.h>
 
 DataView* s_dataViewPtr=nullptr;

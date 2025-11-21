@@ -125,20 +125,26 @@ class SettingsManager
 			m_settingsPtr->m_resume=resume;
 		}
 
+		static bool isInstalled()
+		{
+			return m_settingsPtr->m_isInstalled;
+		}
+
 	private:
+		static SettingsManager* m_settingsPtr;
 		wxString m_nodesColorBorder{"#406897"};
 		wxString m_nodesBkgColor{"#FFFFAA"};
 		wxString m_nodesSelectedColor{"#FFFF00"};
 		wxString m_nodesFontColor{"#eeeeee"};
 		wxString m_edgesColor{"lightgray"};
 		wxString m_canvasColor{"#ebf5fc"};
-		static SettingsManager* m_settingsPtr;
-		
+
 		uint m_borderWidth{2};
 		int m_chunkL{-1};
 		int m_chunkR{-1};
 		int m_resume{-1};
-		
+		bool m_isInstalled{false};
+
 		SettingsManager();
 
 		bool updateNetwork();

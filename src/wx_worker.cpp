@@ -19,7 +19,6 @@
 #include "data_logger.h"
 #include "file_manager.h"
 #include "settings_manager.h"
-
 #include "data_visualization.h"
 
 extern DataView* s_dataViewPtr;

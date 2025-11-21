@@ -104,6 +104,8 @@ class DuplicateImgGUI : public wxFrame
 
 		void setEnable(STATUS status);
 		void setEnable(int stateFlag);
+		void autoInstall();
+		bool isAppInstalled();
 		
 		void getImages(const wxString& selectedDir);
 		void OnChooseDir(wxCommandEvent& evt);

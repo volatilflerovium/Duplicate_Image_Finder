@@ -23,9 +23,6 @@
 
 #include <pwd.h>
 
-#include "utilities/debug_utils.h"
-#include "utilities/profiler.h"
-
 //====================================================================
 
 const std::string FileManager::c_APPLICATION_DIR(FileManager::mkPath("applicationDir"));

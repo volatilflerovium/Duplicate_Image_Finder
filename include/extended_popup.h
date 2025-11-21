@@ -21,8 +21,6 @@
 #include <wx/sizer.h>
 #include <wx/frame.h>
 
-#include "utilities/debug_utils.h"
-
 //====================================================================
 /*
  * Basic popup frame: Popup(), Dismiss() also when it is close

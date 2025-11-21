@@ -17,8 +17,6 @@
 #define OPENCV_UTILITIES_H
 #include "data.h"
 
-#include "utilities/debug_utils.h"
-
 //====================================================================
 
 class ImageProcessor final

@@ -18,8 +18,6 @@
 
 #include <wx/wx.h>
 
-#include "utilities/debug_utils.h"
-
 //====================================================================
 
 class NotificationModule : public wxPanel

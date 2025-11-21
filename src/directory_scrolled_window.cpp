@@ -15,15 +15,11 @@
 * Author:  Dan Machado                                               *
 **********************************************************************/
 #include "directory_scrolled_window.h"
-
 #include "wx_constants.h"
 
 #include <wx/stattext.h>
 #include <wx/sizer.h>
-
 #include <wx/msgdlg.h>
-
-#include "utilities/debug_utils.h"
 
 //====================================================================
 

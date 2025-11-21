@@ -22,8 +22,6 @@ static cv::Mat getNormalizeHistogram(const cv::Mat& img, const cv::Mat& mask)
 #include <fstream>
 #include <iostream>
 
-#include "utilities/debug_utils.h"
-
 //====================================================================
 
 static cv::Mat mkMaskStable(const cv::Mat& img)

@@ -4,7 +4,6 @@
 
 class MyApp : public wxApp
 {
-	DuplicateImgGUI* m_simple;
   public:
 		virtual bool OnInit();
 		virtual ~MyApp()=default;
