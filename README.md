@@ -40,7 +40,8 @@ openSUSE, Red Hat, Ubuntu, and other common desktop distributions.
 
 ### Desktop Integration
 
-This is totally optional.
+Installation is totally optional. To auto install Duplicate_Image_Finder
+go to Settings and check the install box.
 
 Creating desktop entries for Duplicate_Image_Finder ensures quick access
 from the Application menu. For this, Duplicate_Image_Finder's autoinstallation
